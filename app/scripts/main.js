@@ -105,6 +105,27 @@ var AB = {
         };
 
         bk.executeQuery(query, callbacks);
+      },
+
+      /**
+       * save 1 data to KiiCloud.
+       */
+      save: function(account){
+        var user = KiiUser.getCurrentUser();
+        var bk = user.bucketWithName(this.BUCKET_NAME_ACCOUNT);
+
+        var obj = bk.createObject();
+        obj.set("name", "NAME");
+        obj.set("tags", [1, 2, 3]);
+        obj.set("price", 1000);
+
+        obj.save({
+          success: function(theObject){
+          },
+          failure: function(theObject, errorString){
+            console.log(errorString);
+          }
+        });
       }
     },
 
@@ -165,7 +186,7 @@ var AB = {
           fragment += "</tr>";
         });
 
-        table.add(fragment);
+        table.append(fragment);
       }
     },
 
