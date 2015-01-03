@@ -52,7 +52,9 @@ var AB = {
       var password = $("#password").val();
       var onSuccess = function(user){
         // move to main page.
-        window.location = "main.html";
+        AB.main.initMainPage();
+        // hide login page.
+        $("#login-form").css("display", "none");
       };
       var onFailure = function(user, errorString){
         // TODO: show error message
@@ -63,9 +65,14 @@ var AB = {
     }
   },
 
-  // about account book.
-  book: {
-
+  // about main table.
+  main: {
+    /**
+     * initialize main table.
+     */
+    initMainPage: function(){
+      $("#main-table").css("display", "");
+    }
   }
 };
 
