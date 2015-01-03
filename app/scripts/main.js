@@ -91,10 +91,15 @@ var AB = {
         var query = KiiQuery.queryWithClause();
         var callbacks = {
           success: function(queryPerformed, resultSet, nextQuery){
-            //for (var i = 0; i < resultSet.length; i++) {
-            //  // TODO:
-            //}
-            callback(resultSet);
+            var accounts = [];
+            _.each(resultSet, function(result){
+              accounts.push({
+                name: result.get("name"),
+                tags: result.get("tags"),
+                price: result.get("price")
+              });
+            });
+            callback(accounts);
             if (nextQuery) {
               bk.executeQuery(nextQuery, callbacks);
             }
@@ -153,7 +158,7 @@ var AB = {
        * get tag name from id.
        */
       getName: function(id){
-        return tags[id];
+        return this.tags[id];
       }
     },
 
