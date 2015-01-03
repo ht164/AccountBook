@@ -87,3 +87,10 @@ body {
     border-bottom: 0;
   }
 }
+
+.total {
+  border-radius: 6px;
+  border: #ccc 2px solid;
+  padding: 8px;
+}
+
