@@ -52,7 +52,7 @@ var AB = {
       var password = $("#password").val();
       var onSuccess = function(user){
         // move to main page.
-        AB.main.initMainPage();
+        AB.main.Controller.init();
         // hide login page.
         $("#login-form").css("display", "none");
       };
@@ -67,11 +67,194 @@ var AB = {
 
   // about main table.
   main: {
+    // Models.
+
     /**
-     * initialize main table.
+     * account data
      */
-    initMainPage: function(){
-      $("#main-table").css("display", "");
+    AccountData: {
+      // vars.
+      accounts: [],
+
+      // consts.
+      BUCKET_NAME_ACCOUNT: "account",
+
+      // methods
+      /**
+       * load from KiiCloud.
+       */
+      load: function(cond){
+        var View = AB.main.View;
+        var user = KiiUser.getCurrentUser();
+        var bk = user.bucketWithName(this.BUCKET_NAME_ACCOUNT);
+
+        // TODO: condition
+        var query = KiiQuery.queryWithClause();
+        var callbacks = {
+          success: function(queryPerformed, resultSet, nextQuery){
+            var accounts = [];
+            _.each(resultSet, function(result){
+              accounts.push({
+                date: new Date(result.get("date")),
+                name: result.get("name"),
+                tags: result.get("tags"),
+                price: result.get("price")
+              });
+            });
+            // trigger "add" event.
+            View.emit("add", accounts);
+            if (nextQuery) {
+              bk.executeQuery(nextQuery, callbacks);
+            }
+          },
+          failure: function(queryPerformed, errorString){
+            // TODO:
+          }
+        };
+
+        bk.executeQuery(query, callbacks);
+      },
+
+      /**
+       * save 1 data to KiiCloud.
+       */
+      save: function(account){
+        var user = KiiUser.getCurrentUser();
+        var bk = user.bucketWithName(this.BUCKET_NAME_ACCOUNT);
+
+        var obj = bk.createObject();
+        obj.set("date", new Date("2015-01-04"));
+        obj.set("name", "NAME");
+        obj.set("tags", [1, 2, 3]);
+        obj.set("price", 1000);
+
+        obj.save({
+          success: function(theObject){
+          },
+          failure: function(theObject, errorString){
+            console.log(errorString);
+          }
+        });
+      }
+    },
+
+    /**
+     * tag data
+     */
+    TagData: {
+      // vars.
+      // hash of id -> tagname
+      tags: {},
+      // hash of tagname -> id
+      tags_reverse: {},
+
+      // consts.
+      BUCKET_NAME_TAG: "tag",
+
+      // methods.
+      /**
+       * load tag data from KiiCloud.
+       */
+      load: function(){
+      },
+
+      /**
+       * get tag name from id.
+       */
+      getName: function(id){
+        return this.tags[id];
+      }
+    },
+
+    // view.
+    View: {
+      /**
+       * initialize
+       */
+      init: function(){
+        $("#main-table").css("display", "");
+      },
+
+      /**
+       * add account data to bottom of table.
+       */
+      addAccount: function(accounts){
+        var table = $("#main-table table");
+        var TagData = AB.main.TagData;
+
+        var fragment = "";
+        _.each(accounts, function(account){
+          fragment += "<tr data-id='" + account.id + "'>";
+          fragment += "<td>" + moment(account.date).format("YYYY-MM-DD") + "</td>";
+          fragment += "<td>" + account.name + "</td>";
+          fragment += "<td>"; 
+          _.each(account.tags, function(tag){
+            fragment += TagData.getName(tag) + " ";
+          });
+          fragment += "</td>";
+          fragment += "<td>" + account.price + "</td>";
+          fragment += "</tr>";
+        });
+
+        table.append(fragment);
+      },
+
+      /**
+       * trigger event by out of View object.
+       */
+      emit: function(eventName, data){
+        var me = this;
+        if (eventName == "add") {
+          setTimeout(function(){
+            me.addAccount(data);
+          }, 0);
+        }
+      }
+    },
+
+    // controller.
+    Controller: {
+      /**
+       * initialize
+       */
+      init: function(){
+        AB.main.View.init();
+
+        // load tag data.
+        this.loadTag();
+
+        // load this month data.
+        this.load();
+      },
+
+      /**
+       * load tag data.
+       */
+      loadTag: function(){
+        AB.main.TagData.load();
+      },
+
+      /**
+       * load account data.
+       */
+      load: function(cond){
+        var View = AB.main.View;
+        var AccountData = AB.main.AccountData;
+        AccountData.load(cond);
+      }
+    },
+  },
+
+  // about utilities.
+  util: {
+    createClass: function(constructor, proto, staticMethod){
+      var tmp_class = function(){
+        constructor.apply(this, arguments);
+        return this;
+      };
+      if (proto) tmp_class.prototype = proto;
+      if (staticMethod) _.extend(tmp_class, staticMethod);
+      return tmp_class;
     }
   }
 };
