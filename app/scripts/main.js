@@ -15,12 +15,21 @@ window.onload = function(){
 var AB = {
   // about authentication.
   auth: {
+    // consts.
+    LOCALSTORAGE_KEY_ACCESS_TOKEN: "token",
+
+    // methods.
     /**
      * authenticate user.
      */
     authenticateUser: function(username, password, onSuccess, onFailure){
+      var me = this;
       KiiUser.authenticate(username, password, {
-        success: onSuccess,
+        success: function(){
+          // save access token to localStorage.
+          localStorage.setItem(me.LOCALSTORAGE_KEY_ACCESS_TOKEN, KiiUser.getCurrentUser().getAccessToken());
+          onSuccess();
+        },
         failure: onFailure
       });
     },
@@ -29,18 +38,26 @@ var AB = {
      * authenticate user using access token.
      */
     authenticateByToken: function(token, onSuccess, onFailure){
+      KiiUser.authenticateWithToken(token, {
+        success: onSuccess,
+        failure: onFailure
+      })
         // TODO:
     },
 
     /**
      * initialize login page.
+     * first, try to login using access token.
+     * if login is failed(such as no token...), show login form.
      */
     initLoginPage: function(){
-      $("#login-button").on("click", function(){
-        AB.auth.login();
-      });
+      if (!this.loginByToken()){
+        $("#login-button").on("click", function(){
+          AB.auth.login();
+        });
 
-      $("#login-form").css("display", "");
+        $("#login-form").css("display", "");
+      }
     },
 
     /**
@@ -62,6 +79,31 @@ var AB = {
       };
 
       this.authenticateUser(username, password, onSuccess, onFailure);
+    },
+
+    /**
+     * auto login using access token.
+     * access token is stored in localStorage.
+     */
+    loginByToken: function(){
+      var storage = localStorage;
+      var token = storage.getItem(this.LOCALSTORAGE_KEY_ACCESS_TOKEN);
+      var onSuccess = function(user){
+        // move to main page.
+        AB.main.Controller.init();
+        // hide login page.
+        $("#login-form").css("display", "none");
+      };
+      var onFailure = function(user, errorString){
+        // TODO: show error message
+        console.log(errorString);
+      };
+
+      if (token) {
+        this.authenticateByToken(token, onSuccess, onFailure);
+      } else {
+        return false;
+      }
     }
   },
 
