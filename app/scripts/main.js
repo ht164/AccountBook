@@ -83,7 +83,8 @@ var AB = {
       /**
        * load from KiiCloud.
        */
-      load: function(cond, callback, errCallcack){
+      load: function(cond){
+        var View = AB.main.View;
         var user = KiiUser.getCurrentUser();
         var bk = user.bucketWithName(this.BUCKET_NAME_ACCOUNT);
 
@@ -100,7 +101,8 @@ var AB = {
                 price: result.get("price")
               });
             });
-            callback(accounts);
+            // trigger "add" event.
+            View.emit("add", accounts);
             if (nextQuery) {
               bk.executeQuery(nextQuery, callbacks);
             }
@@ -195,6 +197,18 @@ var AB = {
         });
 
         table.append(fragment);
+      },
+
+      /**
+       * trigger event by out of View object.
+       */
+      emit: function(eventName, data){
+        var me = this;
+        if (eventName == "add") {
+          setTimeout(function(){
+            me.addAccount(data);
+          }, 0);
+        }
       }
     },
 
@@ -226,13 +240,7 @@ var AB = {
       load: function(cond){
         var View = AB.main.View;
         var AccountData = AB.main.AccountData;
-        var onSuccess = function(partAccounts){
-          View.addAccount(partAccounts);
-        };
-        var onFailure = function(){
-          // TODO: show error.
-        }
-        AccountData.load(cond, onSuccess, onFailure);
+        AccountData.load(cond);
       }
     },
   },
