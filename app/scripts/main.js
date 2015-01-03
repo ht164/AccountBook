@@ -117,6 +117,7 @@ var AB = {
     AccountData: {
       // vars.
       accounts: [],
+      totalPrice: 0,
 
       // consts.
       BUCKET_NAME_ACCOUNT: "account",
@@ -126,6 +127,7 @@ var AB = {
        * load from KiiCloud.
        */
       load: function(cond){
+        var me = this;
         var View = AB.main.View;
         var user = KiiUser.getCurrentUser();
         var bk = user.bucketWithName(this.BUCKET_NAME_ACCOUNT);
@@ -147,6 +149,8 @@ var AB = {
             View.emit("add", accounts);
             if (nextQuery) {
               bk.executeQuery(nextQuery, callbacks);
+            } else {
+              me.calcTotalPrice();
             }
           },
           failure: function(queryPerformed, errorString){
@@ -155,6 +159,16 @@ var AB = {
         };
 
         bk.executeQuery(query, callbacks);
+      },
+
+      /**
+       * calc total price.
+       */
+      calcTotalPrice: function(){
+        this.totalPrice = _.reduce(this.accounts, function(memo, account){
+          return memo + account.price;
+        }, 0);
+        AB.main.View.emit("total", this.totalPrice);
       },
 
       /**
@@ -210,11 +224,21 @@ var AB = {
 
     // view.
     View: {
+      // vars.
+      eventHandlers: null,
+
       /**
        * initialize
        */
       init: function(){
         $("#main-table").css("display", "");
+
+        // event handler
+        var me = this;
+        me.eventHandlers = {
+          "add": function(){ me.addAccount.apply(me, arguments); },
+          "total": function(){ me.showTotalPrice.apply(me, arguments); }
+        };
       },
 
       /**
@@ -242,15 +266,19 @@ var AB = {
       },
 
       /**
+       * show total price.
+       */
+      showTotalPrice: function(price){
+        $("#total-price").html(price);
+      },
+
+      /**
        * trigger event by out of View object.
        */
       emit: function(eventName, data){
         var me = this;
-        if (eventName == "add") {
-          setTimeout(function(){
-            me.addAccount(data);
-          }, 0);
-        }
+        var eventHandler = me.eventHandlers[eventName];
+        setTimeout(function(){ eventHandler(data); }, 0);
       }
     },
 
