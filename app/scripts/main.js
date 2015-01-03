@@ -94,6 +94,7 @@ var AB = {
             var accounts = [];
             _.each(resultSet, function(result){
               accounts.push({
+                date: new Date(result.get("date")),
                 name: result.get("name"),
                 tags: result.get("tags"),
                 price: result.get("price")
@@ -120,6 +121,7 @@ var AB = {
         var bk = user.bucketWithName(this.BUCKET_NAME_ACCOUNT);
 
         var obj = bk.createObject();
+        obj.set("date", new Date("2015-01-04"));
         obj.set("name", "NAME");
         obj.set("tags", [1, 2, 3]);
         obj.set("price", 1000);
@@ -181,6 +183,7 @@ var AB = {
         var fragment = "";
         _.each(accounts, function(account){
           fragment += "<tr data-id='" + account.id + "'>";
+          fragment += "<td>" + moment(account.date).format("YYYY-MM-DD") + "</td>";
           fragment += "<td>" + account.name + "</td>";
           fragment += "<td>"; 
           _.each(account.tags, function(tag){
