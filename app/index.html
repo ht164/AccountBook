@@ -32,23 +32,28 @@
         <h3 class="text-muted">AccountBook</h3>
       </div>
 
-      <div data-role="content"> 
-        <form class="form-inline">
-        <div>
-          <label for="basic">Username:</label>
-          <input id="username" type="text" name="name" id="basic" value=""  class="form-control" />                
+      <div data-role="content">
+        <div id="login-form" style="display: none;">
+          <form class="form-inline">
+            <div>
+              <label for="basic">Username:</label>
+              <input id="username" type="text" name="name" id="basic" value=""  class="form-control" />                
+            </div>
+
+            <div>
+              <label for="basic">Password:</label>
+              <input id="password" type="password" name="name" id="basic" value="" class="form-control" />
+            </div>
+
+            <div>
+              <button type="button" id="login-button" data-role="button" data-theme="b" class="btn btn-primary">Log In</button> 
+            </div>
+          </form>
         </div>
 
-        <div>
-          <label for="basic">Password:</label>
-          <input id="password" type="password" name="name" id="basic" value="" class="form-control" />
+        <div id="main-table" style="display: none;">
         </div>
 
-        <div>
-          <button type="button" id="login-button" data-role="button" data-theme="b" class="btn btn-primary">Log In</button> 
-        </div>
-        </form>
-                
       </div>
 
       <div class="footer">
