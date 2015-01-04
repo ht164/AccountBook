@@ -239,6 +239,13 @@ var AB = {
           "add": function(){ me.addAccount.apply(me, arguments); },
           "total": function(){ me.showTotalPrice.apply(me, arguments); }
         };
+
+        // button actions.
+        $("#add-data-add").on("click", function(){
+        });
+        $("#add-data-add-inarow").on("click", function(){
+            me.onClick_AddInARow();
+        });
       },
 
       /**
@@ -273,6 +280,30 @@ var AB = {
       },
 
       /**
+       * fired when clicked "add" in add-data form.
+       */
+      onClick_Add: function(){
+        // TODO:
+      },
+
+      /**
+       * fired when clicked "add in a row" in add-data form.
+       */
+      onClick_AddInARow: function(){
+        var Controller = AB.main.Controller;
+        var date = $("#add-data-date").val();
+        var name = $("#add-data-name").val();
+        var tags = [];
+        var price = parseInt($("#add-data-price").val(), 10);
+        Controller.emit("add-data", {
+            date: date,
+            name: name,
+            tags: tags,
+            price: price
+        });
+      },
+
+      /**
        * trigger event by out of View object.
        */
       emit: function(eventName, data){
@@ -290,9 +321,14 @@ var AB = {
       init: function(){
         AB.main.View.init();
 
+        // event handler
+        var me = this;
+        me.eventHandlers = {
+          "add-data": function(){ me.createAccountData.apply(me, arguments); }
+        };
+
         // load tag data.
         this.loadTag();
-
         // load this month data.
         this.load();
       },
@@ -311,6 +347,23 @@ var AB = {
         var View = AB.main.View;
         var AccountData = AB.main.AccountData;
         AccountData.load(cond);
+      },
+
+      /**
+       * create account data.
+       */
+      createAccountData: function(data){
+        var AccountData = AB.main.AccountData;
+        AccountData.save(data);
+      },
+
+      /**
+       * trigger event by out of Controller object.
+       */
+      emit: function(eventName, data){
+        var me = this;
+        var eventHandler = me.eventHandlers[eventName];
+        setTimeout(function(){ eventHandler(data); }, 0);
       }
     },
   },
