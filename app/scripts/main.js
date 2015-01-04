@@ -269,7 +269,7 @@ var AB = {
        * show total price.
        */
       showTotalPrice: function(price){
-        $("#total-price").html(price);
+        $("#total-price").html(price.toLocaleString());
       },
 
       /**
