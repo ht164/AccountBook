@@ -191,6 +191,13 @@ var AB = {
             console.log(errorString);
           }
         });
+      },
+
+      /**
+       * remove 1 data from KiiCloud.
+       */
+      remove: function(id){
+
       }
     },
 
@@ -266,11 +273,16 @@ var AB = {
           });
           fragment += "</td>";
           fragment += "<td>" + account.price + "</td>";
-          fragment += "<td><button class='btn btn-default btn-xs'><span class='glyphicon glyphicon-remove'></span></button></td>";
+          fragment += "<td><button class='btn btn-default btn-xs remove-data-button'><span class='glyphicon glyphicon-remove'></span></button></td>";
           fragment += "</tr>";
         });
 
         table.append(fragment);
+
+        // add click event handler to all "remove button".
+        // TODO: only buttons that are created in above append.
+        var buttons = $("button.remove-data-button", table);
+        buttons.on("click", this.onClick_Remove);
       },
 
       /**
@@ -278,6 +290,17 @@ var AB = {
        */
       showTotalPrice: function(price){
         $("#total-price").html(price.toLocaleString());
+      },
+
+      /**
+       * fired when clicked "remove" button.
+       */
+      onClick_Remove: function(){
+        // "this" is button element.
+        var dataId = this.parentNode.parentNode.getAttribute("data-id");
+        var AccountData = AB.main.AccountData;
+
+        AccountData.remove(dataId);
       },
 
       /**
