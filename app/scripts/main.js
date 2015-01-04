@@ -252,7 +252,7 @@ var AB = {
        * add account data to bottom of table.
        */
       addAccount: function(accounts){
-        var table = $("#main-table table");
+        var table = $("#account-data-table");
         var TagData = AB.main.TagData;
 
         var fragment = "";
