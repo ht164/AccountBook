@@ -266,6 +266,7 @@ var AB = {
           });
           fragment += "</td>";
           fragment += "<td>" + account.price + "</td>";
+          fragment += "<td><button class='btn btn-default btn-xs'><span class='glyphicon glyphicon-remove'></span></button></td>";
           fragment += "</tr>";
         });
 
