@@ -139,6 +139,7 @@ var AB = {
             var accounts = [];
             _.each(resultSet, function(result){
               accounts.push({
+                id: result.objectURI(),
                 date: new Date(result.get("date")),
                 name: result.get("name"),
                 tags: result.get("tags"),
@@ -197,7 +198,19 @@ var AB = {
        * remove 1 data from KiiCloud.
        */
       remove: function(id){
+        // id is uri of KiiCloud.
+        var obj = KiiObject.objectWithURI(id);
 
+        if (obj) {
+          obj.delete({
+            success: function(theDeletedObject){
+              //
+            },
+            failure: function(theObject, errorString){
+              //
+            }
+          });
+        }
       }
     },
 
