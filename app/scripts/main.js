@@ -179,10 +179,10 @@ var AB = {
         var bk = user.bucketWithName(this.BUCKET_NAME_ACCOUNT);
 
         var obj = bk.createObject();
-        obj.set("date", new Date("2015-01-04"));
-        obj.set("name", "NAME");
-        obj.set("tags", [1, 2, 3]);
-        obj.set("price", 1000);
+        obj.set("date", account.date);
+        obj.set("name", account.name);
+        obj.set("tags", account.tags);
+        obj.set("price", account.price);
 
         obj.save({
           success: function(theObject){
@@ -291,7 +291,7 @@ var AB = {
        */
       onClick_AddInARow: function(){
         var Controller = AB.main.Controller;
-        var date = $("#add-data-date").val();
+        var date = new Date($("#add-data-date").val());
         var name = $("#add-data-name").val();
         var tags = [];
         var price = parseInt($("#add-data-price").val(), 10);
