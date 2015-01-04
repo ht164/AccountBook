@@ -200,11 +200,12 @@ var AB = {
       remove: function(id){
         // id is uri of KiiCloud.
         var obj = KiiObject.objectWithURI(id);
+        var View = AB.main.View;
 
         if (obj) {
           obj.delete({
             success: function(theDeletedObject){
-              //
+              View.emit("remove", id);
             },
             failure: function(theObject, errorString){
               //
@@ -257,7 +258,8 @@ var AB = {
         var me = this;
         me.eventHandlers = {
           "add": function(){ me.addAccount.apply(me, arguments); },
-          "total": function(){ me.showTotalPrice.apply(me, arguments); }
+          "total": function(){ me.showTotalPrice.apply(me, arguments); },
+          "remove": function(){ me.removeAccount.apply(me, arguments); }
         };
 
         // button actions.
@@ -303,6 +305,14 @@ var AB = {
        */
       showTotalPrice: function(price){
         $("#total-price").html(price.toLocaleString());
+      },
+
+      /**
+       * remove account data row.
+       */
+      removeAccount: function(id){
+        var tr = $("tr[data-id=\"" + id + "\"]");
+        tr.remove();
       },
 
       /**
