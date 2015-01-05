@@ -273,6 +273,9 @@ var AB = {
         $("#add-data-add-inarow").on("click", function(){
             me.onClick_AddInARow();
         });
+        $("#reload-main-table").on("click", function(){
+            me.onClick_Reload();
+        })
       },
 
       /**
@@ -321,6 +324,13 @@ var AB = {
       },
 
       /**
+       * remove all data in main table.
+       */
+      clearTable: function(){
+        $("#account-data-table tbody tr").remove();
+      },
+
+      /**
        * fired when clicked "remove" button.
        */
       onClick_Remove: function(){
@@ -329,6 +339,14 @@ var AB = {
         var AccountData = AB.main.AccountData;
 
         AccountData.remove(dataId);
+      },
+
+      /**
+       * fired when clicked "reload" button.
+       */
+      onClick_Reload: function(){
+        var Controller = AB.main.Controller;
+        Controller.emit("reload-data");
       },
 
       /**
@@ -376,7 +394,8 @@ var AB = {
         // event handler
         var me = this;
         me.eventHandlers = {
-          "add-data": function(){ me.createAccountData.apply(me, arguments); }
+          "add-data": function(){ me.createAccountData.apply(me, arguments); },
+          "reload-data": function(){ me.load.apply(me, arguments); }
         };
 
         // load tag data.
@@ -398,6 +417,7 @@ var AB = {
       load: function(cond){
         var View = AB.main.View;
         var AccountData = AB.main.AccountData;
+        View.clearTable();
         AccountData.load(cond);
       },
 
