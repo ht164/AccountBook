@@ -132,6 +132,10 @@ var AB = {
         var user = KiiUser.getCurrentUser();
         var bk = user.bucketWithName(this.BUCKET_NAME_ACCOUNT);
 
+        // reset
+        me.accounts = [];
+        me.totalPrice = 0;
+
         // TODO: condition
         var query = KiiQuery.queryWithClause();
         var callbacks = {
@@ -148,6 +152,7 @@ var AB = {
             });
             // trigger "add" event.
             View.emit("add", accounts);
+            me.accounts = me.accounts.concat(accounts);
             if (nextQuery) {
               bk.executeQuery(nextQuery, callbacks);
             } else {
