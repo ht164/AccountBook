@@ -139,6 +139,7 @@ var AB = {
             var accounts = [];
             _.each(resultSet, function(result){
               accounts.push({
+                id: result.objectURI(),
                 date: new Date(result.get("date")),
                 name: result.get("name"),
                 tags: result.get("tags"),
@@ -191,6 +192,26 @@ var AB = {
             console.log(errorString);
           }
         });
+      },
+
+      /**
+       * remove 1 data from KiiCloud.
+       */
+      remove: function(id){
+        // id is uri of KiiCloud.
+        var obj = KiiObject.objectWithURI(id);
+        var View = AB.main.View;
+
+        if (obj) {
+          obj.delete({
+            success: function(theDeletedObject){
+              View.emit("remove", id);
+            },
+            failure: function(theObject, errorString){
+              //
+            }
+          });
+        }
       }
     },
 
@@ -237,7 +258,8 @@ var AB = {
         var me = this;
         me.eventHandlers = {
           "add": function(){ me.addAccount.apply(me, arguments); },
-          "total": function(){ me.showTotalPrice.apply(me, arguments); }
+          "total": function(){ me.showTotalPrice.apply(me, arguments); },
+          "remove": function(){ me.removeAccount.apply(me, arguments); }
         };
 
         // button actions.
@@ -266,10 +288,16 @@ var AB = {
           });
           fragment += "</td>";
           fragment += "<td>" + account.price + "</td>";
+          fragment += "<td><button class='btn btn-default btn-xs remove-data-button'><span class='glyphicon glyphicon-remove'></span></button></td>";
           fragment += "</tr>";
         });
 
         table.append(fragment);
+
+        // add click event handler to all "remove button".
+        // TODO: only buttons that are created in above append.
+        var buttons = $("button.remove-data-button", table);
+        buttons.on("click", this.onClick_Remove);
       },
 
       /**
@@ -277,6 +305,25 @@ var AB = {
        */
       showTotalPrice: function(price){
         $("#total-price").html(price.toLocaleString());
+      },
+
+      /**
+       * remove account data row.
+       */
+      removeAccount: function(id){
+        var tr = $("tr[data-id=\"" + id + "\"]");
+        tr.remove();
+      },
+
+      /**
+       * fired when clicked "remove" button.
+       */
+      onClick_Remove: function(){
+        // "this" is button element.
+        var dataId = this.parentNode.parentNode.getAttribute("data-id");
+        var AccountData = AB.main.AccountData;
+
+        AccountData.remove(dataId);
       },
 
       /**
