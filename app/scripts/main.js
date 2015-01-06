@@ -274,7 +274,35 @@ var AB = {
        */
       getName: function(id){
         return this.tags[id];
-      }
+      },
+
+      /**
+       * save tag to KiiCloud.
+       * tag id is epoch msec.
+       * if save is success, call callback function.
+       */
+      save: function(tag, callback){
+        var user = KiiUser.getCurrentUser();
+        var bk = user.bucketWithName(this.BUCKET_NAME_TAG);
+        var tagId = "" + (new Date()).getTime();
+
+        var obj = bk.createObject();
+        obj.set("id", tagId);
+        obj.set("name", tag.name);
+
+        obj.save({
+          success: function(theObject){
+            callback({
+              id: tagId,
+              name: tag.name
+            });
+          },
+          failure: function(theObject, errorString){
+            console.log(errorString);
+          }
+        });
+      },
+
     },
 
     // view.
@@ -305,6 +333,9 @@ var AB = {
         });
         $("#reload-main-table").on("click", function(){
             me.onClick_Reload();
+        });
+        $("#create-new-tag").on("click", function(){
+            me.onClick_CreateTag();
         });
       },
 
@@ -368,7 +399,7 @@ var AB = {
         // edit tag dialog.
         var fragment = "";
         _.each(tags, function(tagName, index){
-          fragment = "<span class='tag' data-tag-id='" + index + "'>" + tagName + "</span>";
+          fragment += "<span class='tag' data-tag-id='" + index + "'>" + tagName + "</span>";
         })
         $("#edit-tag-area").html(fragment);
       },
@@ -417,6 +448,17 @@ var AB = {
       },
 
       /**
+       * fired when clicked "create" in edit tag form.
+       */
+      onClick_CreateTag: function(){
+        var Controller = AB.main.Controller;
+        var tagName = $("#create-tag-name").val();
+        Controller.emit("create-tag", {
+          name: tagName
+        });
+      },
+
+      /**
        * trigger event by out of View object.
        */
       emit: function(eventName, data){
@@ -444,7 +486,8 @@ var AB = {
         var me = this;
         me.eventHandlers = {
           "add-data": function(){ me.createAccountData.apply(me, arguments); },
-          "reload-data": function(){ me.load.apply(me, arguments); }
+          "reload-data": function(){ me.load.apply(me, arguments); },
+          "create-tag": function(){ me.createTag.apply(me, arguments); }
         };
 
         // load tag data.
@@ -483,6 +526,21 @@ var AB = {
       createAccountData: function(data){
         var AccountData = AB.main.AccountData;
         AccountData.save(data);
+      },
+
+      /**
+       * create new tag.
+       */
+      createTag: function(data){
+        var me = this;
+        var TagData = AB.main.TagData;
+        var View = AB.main.View;
+        // if create is success, change tag data and notify to View.
+        var callback = function(createdTag){
+          me.tags[createdTag.id] = createdTag.name;
+          View.emit("changeTag");
+        };
+        TagData.save(data, callback);
       },
 
       /**
