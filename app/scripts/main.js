@@ -306,9 +306,6 @@ var AB = {
         $("#reload-main-table").on("click", function(){
             me.onClick_Reload();
         });
-        $("#show-edit-tag-dialog").on("click", function(){
-            me.onClick_ShowEditTagDialog();
-        });
       },
 
       /**
@@ -393,12 +390,6 @@ var AB = {
       onClick_Reload: function(){
         var Controller = AB.main.Controller;
         Controller.emit("reload-data");
-      },
-
-      /**
-       * fired when clicked "edit tag" button.
-       */
-      onClick_ShowEditTagDialog: function(){
       },
 
       /**
