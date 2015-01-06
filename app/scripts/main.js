@@ -236,8 +236,37 @@ var AB = {
       // methods.
       /**
        * load tag data from KiiCloud.
+       * after loading, call callback function to notify tag data.
        */
-      load: function(){
+      load: function(callback){
+        var me = this;
+        var user = KiiUser.getCurrentUser();
+        var bk = user.bucketWithName(this.BUCKET_NAME_TAG);
+
+        var query = KiiQuery.queryWithClause();
+        var callbacks_kiiCloud = {
+          success: function(queryPerformed, resultSet, nextQuery){
+            _.each(resultSet, function(result){
+              var name = result.get("name");
+              var id = result.get("id");
+              me.tags[id] = name;
+              me.tags_reverse[name] = id;
+            });
+            if (nextQuery) {
+              bk.executeQuery(nextQuery, callbacks);
+            } else {
+              // all tag data is loaded.
+              // call callback function.
+              // TODO: copy hash(tags).
+              if (callback) callback(me.tags);
+            }
+          },
+          failure: function(queryPerformed, errorString){
+            // TODO:
+          }
+        };
+
+        bk.executeQuery(query, callbacks_kiiCloud);
       },
 
       /**
@@ -264,7 +293,8 @@ var AB = {
         me.eventHandlers = {
           "add": function(){ me.addAccount.apply(me, arguments); },
           "total": function(){ me.showTotalPrice.apply(me, arguments); },
-          "remove": function(){ me.removeAccount.apply(me, arguments); }
+          "remove": function(){ me.removeAccount.apply(me, arguments); },
+          "changeTag": function() { me.changeTag.apply(me, arguments); }
         };
 
         // button actions.
@@ -275,7 +305,10 @@ var AB = {
         });
         $("#reload-main-table").on("click", function(){
             me.onClick_Reload();
-        })
+        });
+        $("#show-edit-tag-dialog").on("click", function(){
+            me.onClick_ShowEditTagDialog();
+        });
       },
 
       /**
@@ -331,6 +364,19 @@ var AB = {
       },
 
       /**
+       * change shown tag info when tag is changed.
+       */
+      changeTag: function(){
+        var tags = AB.main.Controller.tags;
+        // edit tag dialog.
+        var fragment = "";
+        _.each(tags, function(tagName, index){
+          fragment = "<span class='tag' data-tag-id='" + index + "'>" + tagName + "</span>";
+        })
+        $("#edit-tag-area").html(fragment);
+      },
+
+      /**
        * fired when clicked "remove" button.
        */
       onClick_Remove: function(){
@@ -347,6 +393,12 @@ var AB = {
       onClick_Reload: function(){
         var Controller = AB.main.Controller;
         Controller.emit("reload-data");
+      },
+
+      /**
+       * fired when clicked "edit tag" button.
+       */
+      onClick_ShowEditTagDialog: function(){
       },
 
       /**
@@ -385,6 +437,12 @@ var AB = {
 
     // controller.
     Controller: {
+      // data for view.
+      // account data
+      accounts: [],
+      // tags
+      tags: {},
+
       /**
        * initialize
        */
@@ -405,10 +463,17 @@ var AB = {
       },
 
       /**
-       * load tag data.
+       * load tag data, store to "tags" property, and notify to View.
        */
       loadTag: function(){
-        AB.main.TagData.load();
+        var me = this;
+        var View = AB.main.View;
+        // if load is success, store tag data and notify to View.
+        var callback = function(tags){
+          me.tags = tags;
+          View.emit("changeTag");
+        }
+        AB.main.TagData.load(callback);
       },
 
       /**
