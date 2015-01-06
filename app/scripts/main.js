@@ -353,7 +353,7 @@ var AB = {
           fragment += "<td>" + account.name + "</td>";
           fragment += "<td>"; 
           _.each(account.tags, function(tag){
-            fragment += TagData.getName(tag) + " ";
+            fragment += "<span class='tag'>" + TagData.getName(tag) + "</span>";
           });
           fragment += "</td>";
           fragment += "<td>" + account.price + "</td>";
