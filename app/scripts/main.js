@@ -449,6 +449,11 @@ var AB = {
         var date = new Date($("#add-data-date").val());
         var name = $("#add-data-name").val();
         var tags = [];
+        var checkedTags = $("#add-data-tag-area input[type=checkbox]:checked");
+        for (var i = 0, n = checkedTags.length; i < n; i++) {
+          var tagId = checkedTags[i].getAttribute('data-tag-id');
+          tags.push(tagId);
+        }
         var price = parseInt($("#add-data-price").val(), 10);
         Controller.emit("add-data", {
             date: date,
