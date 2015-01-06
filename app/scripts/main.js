@@ -396,12 +396,23 @@ var AB = {
        */
       changeTag: function(){
         var tags = AB.main.Controller.tags;
+        // add data dialog.
+        (function(){
+          var fragment = "";
+          _.each(tags, function(tagName, index){
+            fragment += "<input type='checkbox' data-tag-id='" + index + "''>";
+            fragment += "<span class='tag'>" + tagName + "</span>";
+          });
+          $("#add-data-tag-area").html(fragment);
+        })();
         // edit tag dialog.
-        var fragment = "";
-        _.each(tags, function(tagName, index){
-          fragment += "<span class='tag' data-tag-id='" + index + "'>" + tagName + "</span>";
-        })
-        $("#edit-tag-area").html(fragment);
+        (function(){
+          var fragment = "";
+          _.each(tags, function(tagName, index){
+            fragment += "<span class='tag' data-tag-id='" + index + "'>" + tagName + "</span>";
+          });
+          $("#edit-tag-area").html(fragment);
+        })();
       },
 
       /**
