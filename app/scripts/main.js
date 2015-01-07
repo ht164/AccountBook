@@ -341,6 +341,10 @@ var AB = {
       init: function(){
         $("#main-table").css("display", "");
 
+        // create menu in top navigation.
+        var fragment = "<li><a href='#' id='logout'>Logout</a></li>";
+        $("#topnavi-menu").append(fragment);
+
         // event handler
         var me = this;
         me.eventHandlers = {
