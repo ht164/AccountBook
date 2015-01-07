@@ -436,7 +436,7 @@ var AB = {
         _.each(pricesPerTag, function(price, tagName){
           fragment += "<tr>";
           fragment += "<td><span class='tag'>" + tagName + "</span></td>";
-          fragment += "<td>" + price + "</td>";
+          fragment += "<td class='price'>" + price + "</td>";
           fragment += "</tr>";
         });
         $("#total-per-tag").html(fragment);
