@@ -302,7 +302,32 @@ var AB = {
           }
         });
       },
+    },
 
+    /**
+     * Session
+     * login, logout
+     */
+    Session: {
+      /**
+       * login
+       * TODO: move from AB.auth object.
+       */
+
+      /**
+       * logout
+       * disable access token, remove access token from localstorage,
+       * and reload page.
+       */
+      logout: function(){
+        // access token is expired in 1 sec.
+        Kii.setAccessTokenExpiration(1);
+        // TODO: LOCALSTORAGE_KEY_ACCESS_TOKEN have to be moved to Session class.
+        var storage = localStorage;
+        storage.removeItem(AB.auth.LOCALSTORAGE_KEY_ACCESS_TOKEN);
+
+        location.reload();
+      }
     },
 
     // view.
@@ -336,6 +361,9 @@ var AB = {
         });
         $("#create-new-tag").on("click", function(){
             me.onClick_CreateTag();
+        });
+        $("#logout").on("click", function(){
+            me.onClick_Logout();
         });
       },
 
@@ -413,6 +441,14 @@ var AB = {
           });
           $("#edit-tag-area").html(fragment);
         })();
+      },
+
+      /**
+       * fired when clicked "logout" link.
+       */
+      onClick_Logout: function(){
+        var Controller = AB.main.Controller;
+        Controller.emit("logout");
       },
 
       /**
@@ -503,7 +539,8 @@ var AB = {
         me.eventHandlers = {
           "add-data": function(){ me.createAccountData.apply(me, arguments); },
           "reload-data": function(){ me.load.apply(me, arguments); },
-          "create-tag": function(){ me.createTag.apply(me, arguments); }
+          "create-tag": function(){ me.createTag.apply(me, arguments); },
+          "logout": function(){ me.logout.apply(me, arguments); }
         };
 
         // load tag data.
@@ -557,6 +594,14 @@ var AB = {
           View.emit("changeTag");
         };
         TagData.save(data, callback);
+      },
+
+      /**
+       * logout
+       */
+      logout: function(){
+        var Session = AB.main.Session;
+        Session.logout();
       },
 
       /**
