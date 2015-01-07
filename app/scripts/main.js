@@ -236,8 +236,37 @@ var AB = {
       // methods.
       /**
        * load tag data from KiiCloud.
+       * after loading, call callback function to notify tag data.
        */
-      load: function(){
+      load: function(callback){
+        var me = this;
+        var user = KiiUser.getCurrentUser();
+        var bk = user.bucketWithName(this.BUCKET_NAME_TAG);
+
+        var query = KiiQuery.queryWithClause();
+        var callbacks_kiiCloud = {
+          success: function(queryPerformed, resultSet, nextQuery){
+            _.each(resultSet, function(result){
+              var name = result.get("name");
+              var id = result.get("id");
+              me.tags[id] = name;
+              me.tags_reverse[name] = id;
+            });
+            if (nextQuery) {
+              bk.executeQuery(nextQuery, callbacks);
+            } else {
+              // all tag data is loaded.
+              // call callback function.
+              // TODO: copy hash(tags).
+              if (callback) callback(me.tags);
+            }
+          },
+          failure: function(queryPerformed, errorString){
+            // TODO:
+          }
+        };
+
+        bk.executeQuery(query, callbacks_kiiCloud);
       },
 
       /**
@@ -245,7 +274,35 @@ var AB = {
        */
       getName: function(id){
         return this.tags[id];
-      }
+      },
+
+      /**
+       * save tag to KiiCloud.
+       * tag id is epoch msec.
+       * if save is success, call callback function.
+       */
+      save: function(tag, callback){
+        var user = KiiUser.getCurrentUser();
+        var bk = user.bucketWithName(this.BUCKET_NAME_TAG);
+        var tagId = "" + (new Date()).getTime();
+
+        var obj = bk.createObject();
+        obj.set("id", tagId);
+        obj.set("name", tag.name);
+
+        obj.save({
+          success: function(theObject){
+            callback({
+              id: tagId,
+              name: tag.name
+            });
+          },
+          failure: function(theObject, errorString){
+            console.log(errorString);
+          }
+        });
+      },
+
     },
 
     // view.
@@ -264,7 +321,8 @@ var AB = {
         me.eventHandlers = {
           "add": function(){ me.addAccount.apply(me, arguments); },
           "total": function(){ me.showTotalPrice.apply(me, arguments); },
-          "remove": function(){ me.removeAccount.apply(me, arguments); }
+          "remove": function(){ me.removeAccount.apply(me, arguments); },
+          "changeTag": function() { me.changeTag.apply(me, arguments); }
         };
 
         // button actions.
@@ -275,7 +333,10 @@ var AB = {
         });
         $("#reload-main-table").on("click", function(){
             me.onClick_Reload();
-        })
+        });
+        $("#create-new-tag").on("click", function(){
+            me.onClick_CreateTag();
+        });
       },
 
       /**
@@ -292,7 +353,7 @@ var AB = {
           fragment += "<td>" + account.name + "</td>";
           fragment += "<td>"; 
           _.each(account.tags, function(tag){
-            fragment += TagData.getName(tag) + " ";
+            fragment += "<span class='tag'>" + TagData.getName(tag) + "</span>";
           });
           fragment += "</td>";
           fragment += "<td>" + account.price + "</td>";
@@ -331,6 +392,30 @@ var AB = {
       },
 
       /**
+       * change shown tag info when tag is changed.
+       */
+      changeTag: function(){
+        var tags = AB.main.Controller.tags;
+        // add data dialog.
+        (function(){
+          var fragment = "";
+          _.each(tags, function(tagName, index){
+            fragment += "<input type='checkbox' data-tag-id='" + index + "''>";
+            fragment += "<span class='tag'>" + tagName + "</span>";
+          });
+          $("#add-data-tag-area").html(fragment);
+        })();
+        // edit tag dialog.
+        (function(){
+          var fragment = "";
+          _.each(tags, function(tagName, index){
+            fragment += "<span class='tag' data-tag-id='" + index + "'>" + tagName + "</span>";
+          });
+          $("#edit-tag-area").html(fragment);
+        })();
+      },
+
+      /**
        * fired when clicked "remove" button.
        */
       onClick_Remove: function(){
@@ -364,12 +449,28 @@ var AB = {
         var date = new Date($("#add-data-date").val());
         var name = $("#add-data-name").val();
         var tags = [];
+        var checkedTags = $("#add-data-tag-area input[type=checkbox]:checked");
+        for (var i = 0, n = checkedTags.length; i < n; i++) {
+          var tagId = checkedTags[i].getAttribute('data-tag-id');
+          tags.push(tagId);
+        }
         var price = parseInt($("#add-data-price").val(), 10);
         Controller.emit("add-data", {
             date: date,
             name: name,
             tags: tags,
             price: price
+        });
+      },
+
+      /**
+       * fired when clicked "create" in edit tag form.
+       */
+      onClick_CreateTag: function(){
+        var Controller = AB.main.Controller;
+        var tagName = $("#create-tag-name").val();
+        Controller.emit("create-tag", {
+          name: tagName
         });
       },
 
@@ -385,6 +486,12 @@ var AB = {
 
     // controller.
     Controller: {
+      // data for view.
+      // account data
+      accounts: [],
+      // tags
+      tags: {},
+
       /**
        * initialize
        */
@@ -395,7 +502,8 @@ var AB = {
         var me = this;
         me.eventHandlers = {
           "add-data": function(){ me.createAccountData.apply(me, arguments); },
-          "reload-data": function(){ me.load.apply(me, arguments); }
+          "reload-data": function(){ me.load.apply(me, arguments); },
+          "create-tag": function(){ me.createTag.apply(me, arguments); }
         };
 
         // load tag data.
@@ -405,10 +513,17 @@ var AB = {
       },
 
       /**
-       * load tag data.
+       * load tag data, store to "tags" property, and notify to View.
        */
       loadTag: function(){
-        AB.main.TagData.load();
+        var me = this;
+        var View = AB.main.View;
+        // if load is success, store tag data and notify to View.
+        var callback = function(tags){
+          me.tags = tags;
+          View.emit("changeTag");
+        }
+        AB.main.TagData.load(callback);
       },
 
       /**
@@ -427,6 +542,21 @@ var AB = {
       createAccountData: function(data){
         var AccountData = AB.main.AccountData;
         AccountData.save(data);
+      },
+
+      /**
+       * create new tag.
+       */
+      createTag: function(data){
+        var me = this;
+        var TagData = AB.main.TagData;
+        var View = AB.main.View;
+        // if create is success, change tag data and notify to View.
+        var callback = function(createdTag){
+          me.tags[createdTag.id] = createdTag.name;
+          View.emit("changeTag");
+        };
+        TagData.save(data, callback);
       },
 
       /**
