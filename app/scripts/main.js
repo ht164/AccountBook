@@ -118,6 +118,7 @@ var AB = {
       // vars.
       accounts: [],
       totalPrice: 0,
+      pricePerTag: {},
 
       // consts.
       BUCKET_NAME_ACCOUNT: "account",
@@ -135,6 +136,7 @@ var AB = {
         // reset
         me.accounts = [];
         me.totalPrice = 0;
+        me.pricePerTag = {};
 
         // TODO: condition
         var query = KiiQuery.queryWithClause();
@@ -157,6 +159,7 @@ var AB = {
               bk.executeQuery(nextQuery, callbacks);
             } else {
               me.calcTotalPrice();
+              me.calcTotalPricePerTag();
             }
           },
           failure: function(queryPerformed, errorString){
@@ -175,6 +178,22 @@ var AB = {
           return memo + account.price;
         }, 0);
         AB.main.View.emit("total", this.totalPrice);
+      },
+
+      /**
+       * calc total price per tag.
+       */
+      calcTotalPricePerTag: function(){
+        var pricePerTag = {};
+        _.each(this.accounts, function(account){
+          _.each(account.tags, function(tag){
+            pricePerTag[tag] = (pricePerTag[tag] || 0) + account.price;
+          });
+        });
+        this.pricePerTag = pricePerTag;
+        // TODO: change firing View event to firing Controler event.
+        // TODO: don't trigger View event directly.
+        AB.main.View.emit("totalPerTag", this.pricePerTag);
       },
 
       /**
@@ -350,6 +369,7 @@ var AB = {
         me.eventHandlers = {
           "add": function(){ me.addAccount.apply(me, arguments); },
           "total": function(){ me.showTotalPrice.apply(me, arguments); },
+          "totalPerTag": function(){ me.showTotalPricePerTag.apply(me, arguments); },
           "remove": function(){ me.removeAccount.apply(me, arguments); },
           "changeTag": function() { me.changeTag.apply(me, arguments); }
         };
@@ -406,6 +426,20 @@ var AB = {
        */
       showTotalPrice: function(price){
         $("#total-price").html(price.toLocaleString());
+      },
+
+      /**
+       * show total price per tag.
+       */
+      showTotalPricePerTag: function(pricesPerTag){
+        var fragment = "<table>";
+        _.each(pricesPerTag, function(price, tagName){
+          fragment += "<tr>";
+          fragment += "<td><span class='tag'>" + tagName + "</span></td>";
+          fragment += "<td class='price'>" + price + "</td>";
+          fragment += "</tr>";
+        });
+        $("#total-per-tag").html(fragment);
       },
 
       /**

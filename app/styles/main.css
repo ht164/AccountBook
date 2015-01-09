@@ -102,6 +102,17 @@ body {
   margin: 2px;
 }
 
+.total-tag .tag {
+  border-radius: 2px;
+  border: #ddd 1px solid;
+  padding: 2px;
+  margin: 2px;
+}
+
+.total-tag .price {
+  text-align: right;
+}
+
 .add-data-modal .tag-area .tag {
   border-radius: 4px;
   border: #ddd 1px solid;
