@@ -264,23 +264,50 @@ var app = angular.module("ABApp", []);
    * tag data model.
    */
   app.factory("tagData", function(){
+    // privates.
+    // consts.
+    var BUCKET_NAME_TAG = "tag";
+
     return {
       // properties.
       tags: {},
-      tags_inverse: {},
+      tags_reverse: {},
 
       // methods.
       /**
-       * load tag data.
+       * load tag data from KiiCloud.
+       * after loading, call callback function to notify tag data.
        */
-      load: function(){
+      load: function(onSuccess, onFailure){
         var me = this;
-        // store dummy data.
-        me.tags = {
-          "001": "TAG1",
-          "002": "TAG2"
+        var user = KiiUser.getCurrentUser();
+        var bk = user.bucketWithName(BUCKET_NAME_TAG);
+
+        var query = KiiQuery.queryWithClause();
+        var callbacks_kiiCloud = {
+          success: function(queryPerformed, resultSet, nextQuery){
+            _.each(resultSet, function(result){
+              var name = result.get("name");
+              var id = result.get("id");
+              me.tags[id] = name;
+              me.tags_reverse[name] = id;
+            });
+            if (nextQuery) {
+              bk.executeQuery(nextQuery, callbacks);
+            } else {
+              // all tag data is loaded.
+              // call callback function.
+              // TODO: copy hash(tags).
+              if (onSuccess) onSuccess();
+            }
+          },
+          failure: function(queryPerformed, errorString){
+            if (onFailure) onFailure();
+          }
         };
-      }
+
+        bk.executeQuery(query, callbacks_kiiCloud);
+      },
     };
   });
 
