@@ -100,7 +100,7 @@ var app = angular.module("ABApp", []);
       // properties.
       username: "",
       password: "",
-      login: false,
+      isLoggedIn: false,
 
       // methods.
       /**
@@ -112,7 +112,7 @@ var app = angular.module("ABApp", []);
           success: function(){
             // save access token to localStorage.
             localStorage.setItem(LOCALSTORAGE_KEY_ACCESS_TOKEN, KiiUser.getCurrentUser().getAccessToken());
-            me.login = true;
+            me.isLoggedIn = true;
             onSuccess();
           },
           failure: function(){
@@ -136,7 +136,7 @@ var app = angular.module("ABApp", []);
         }
         var callbacks = {
           success: function(){
-            me.login = true;
+            me.isLoggedIn = true;
             onSuccess();
           },
           failure: onFailure
@@ -152,7 +152,7 @@ var app = angular.module("ABApp", []);
         var me = this;
         Kii.setAccessTokenExpiration(1);
         localStorage.removeItem(LOCALSTORAGE_KEY_ACCESS_TOKEN);
-        me.login = false;
+        me.isLoggedIn = false;
       }
     };
   });
