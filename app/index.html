@@ -70,7 +70,11 @@
                   <tr ng-repeat="account in accountData.accounts">
                     <td>{{ account.date }}</td>
                     <td>{{ account.name }}</td>
-                    <td>{{ account.tags }}</td>
+                    <td>
+                      <span class="tag" ng-repeat="tagId in account.tags">
+                        {{ tagData.tags[tagId] }}
+                      </span>
+                    </td>
                     <td>{{ account.price }}</td>
                   </tr>
                 </tbody>

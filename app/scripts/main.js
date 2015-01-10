@@ -144,9 +144,10 @@ var app = angular.module("ABApp", []);
   /**
    * main table controller.
    */
-  app.controller("mainTableController", function($scope, accountData){
+  app.controller("mainTableController", function($scope, accountData, tagData){
     // properties.
     $scope.accountData = accountData;
+    $scope.tagData = tagData;
 
     // methods.
     /**
@@ -156,10 +157,18 @@ var app = angular.module("ABApp", []);
       accountData.load();
     };
 
+    /**
+     * load tag data.
+     */
+    $scope.loadTag = function(){
+      tagData.load();
+    },
+
     // watch
     // load data when main table appears.
     $scope.$watch($scope.$parent.pageState, function(){
       if ($scope.$parent.pageState == "mainTable"){
+        $scope.loadTag();
         $scope.load();
       }
     });
@@ -194,6 +203,30 @@ var app = angular.module("ABApp", []);
             price: 1000
           }
         ];
+      }
+    };
+  });
+
+  /**
+   * tag data model.
+   */
+  app.factory("tagData", function(){
+    return {
+      // properties.
+      tags: {},
+      tags_inverse: {},
+
+      // methods.
+      /**
+       * load tag data.
+       */
+      load: function(){
+        var me = this;
+        // store dummy data.
+        me.tags = {
+          "001": "TAG1",
+          "002": "TAG2"
+        };
       }
     };
   });
