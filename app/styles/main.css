@@ -88,6 +88,10 @@ body {
   }
 }
 
+.area-block {
+  margin: 6px 2px;
+}
+
 .total {
   border-radius: 6px;
   border: #ccc 2px solid;

@@ -233,6 +233,19 @@ var app = angular.module("ABApp", []);
       return totalPrice;
     }
 
+    /**
+     * calc total per tag.
+     */
+    function calcTotalPerTag(accounts){
+      var totalPerTag = {};
+      _.each(accounts, function(account){
+        _.each(account.tags, function(tag){
+          totalPerTag[tag] = (totalPerTag[tag] || 0) + account.price;
+        });
+      });
+      return totalPerTag;
+    }
+
     return {
       // properties.
       // account array.
@@ -277,7 +290,7 @@ var app = angular.module("ABApp", []);
               bk.executeQuery(nextQuery, callbacks);
             } else {
               me.totalPrice.all = calcTotalPrice(me.accounts);
-              //me.calcTotalPricePerTag();
+              me.totalPrice.perTag = calcTotalPerTag(me.accounts);
               if (onSuccess) onSuccess();
             }
           },
@@ -435,6 +448,7 @@ var app = angular.module("ABApp", []);
    */
   app.controller("sumTotalController", [ "$scope", "accountData", "tagData", function($scope, accountData, tagData){
     $scope.total = accountData.totalPrice;
+    $scope.tags = tagData.tags;
   }]);
 
   /**

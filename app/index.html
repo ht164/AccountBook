@@ -80,12 +80,21 @@
             </div>
             <div class="col-xs-3">
               <div ng-controller="sumTotalController">
-                <div class="total"><span id="total-price">{{ total.all }}</span> yen</div>
-                <div class="total-tag" id="total-per-tag"></div>
+                <div class="total area-block"><span>{{ total.all }}</span> yen</div>
+                <div class="total-tag area-block">
+                  <table>
+                    <tr ng-repeat="(id, price) in total.perTag">
+                      <td><span class="tag">{{ tags[id] }}</span></td>
+                      <td class="price">{{ price }}</td>
+                    </tr>
+                  </table>
+                </div>
               </div>
-              <button class="btn btn-primary" data-toggle="modal" data-target="#addModal">Add</button>
-              <button class="btn btn-default" ng-click="load()"><span class="glyphicon glyphicon-refresh"></span></button>
-              <button class="btn btn-default" data-toggle="modal" data-target="#editTagModal">Edit tag</button>
+              <div class="area-block">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#addModal">Add</button>
+                <button class="btn btn-default" ng-click="load()"><span class="glyphicon glyphicon-refresh"></span></button>
+                <button class="btn btn-default" data-toggle="modal" data-target="#editTagModal">Edit tag</button>
+              </div>
             </div>
           </div>
 
