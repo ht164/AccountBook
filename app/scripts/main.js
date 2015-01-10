@@ -531,7 +531,7 @@ var app = angular.module("ABApp", []);
      */
     $scope.logout = function(){
       User.logout();
-      $scope.$parent.pageState = "loginForm";
+      $scope.$parent.showLoginForm();
     };
   });
 
