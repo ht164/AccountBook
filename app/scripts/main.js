@@ -432,6 +432,14 @@ var app = angular.module("ABApp", []);
     }
   });
 
+  /**
+   * edit tag controller
+   */
+  app.controller("editTagController", function($scope, tagData){
+    $scope.tags = tagData.tags;
+
+  });
+
 })(app);
 
 // namespace AB
