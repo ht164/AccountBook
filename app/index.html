@@ -43,15 +43,11 @@
               <input id="password" type="password" name="name" id="basic" value="" class="form-control" ng-model="User.password" />
             </div>
 
-            {{ User.username + " " + User.password }} <br>
-
             <div>
               <button type="submit" id="login-button" data-role="button" data-theme="b" class="btn btn-primary">Log In</button> 
             </div>
           </form>
         </div>
-
-{{ pageState }}
 
         <div id="main-table" ng-switch-when="mainTable" ng-controller="mainTableController">
           <div class="row">
