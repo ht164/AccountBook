@@ -18,26 +18,23 @@ var app = angular.module("ABApp", []);
    */
   app.controller("pageController", function($scope){
     // on boot, show login form and hide main table.
-    $scope.show = {
-      loginForm: true,
-      mainTable: false
-    };
+    var PAGE_STATE_LOGINFORM = "loginForm";
+    var PAGE_STATE_MAINTABLE = "mainTable";
+    $scope.pageState = PAGE_STATE_LOGINFORM;
 
     //methods.
     /**
      * change page to main table.
      */
     $scope.showMainTable = function(){
-      $scope.show.mainTable = true;
-      $scope.show.loginForm = false;
+      $scope.pageState = PAGE_STATE_MAINTABLE;
     };
 
     /**
      * change page to login form.
      */
     $scope.showLoginForm = function(){
-      $scope.show.loginForm = true;
-      $scope.show.mainTable = false;
+      $scope.pageState = PAGE_STATE_LOGINFORM;
     };
 
   });
@@ -56,13 +53,16 @@ var app = angular.module("ABApp", []);
     $scope.login = function(){
       var onSuccess = function(){
         // TODO: this is correct...?
-        $scope.showMainTable();
+        $scope.$parent.showMainTable();
+        // apply scope data.
+        $scope.$parent.$apply();
       };
       var onFailure = function(){
         // TODO: show login failed.
         alert("failure");
       };
-      User.login(onSuccess, onFailure);
+      //User.login(onSuccess, onFailure);
+      setTimeout(onSuccess, 0);
     }
   });
 

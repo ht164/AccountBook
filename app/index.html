@@ -30,8 +30,8 @@
         <h3 class="text-muted">AccountBook</h3>
       </div>
 
-      <div data-role="content">
-        <div id="login-form" ng-show="show.loginForm" ng-controller="loginFormController">
+      <div data-role="content" ng-switch="pageState">
+        <div id="login-form" ng-switch-when="loginForm" ng-controller="loginFormController">
           <form class="form-inline" ng-submit="login()">
             <div>
               <label for="basic">Username:</label>
@@ -43,7 +43,7 @@
               <input id="password" type="password" name="name" id="basic" value="" class="form-control" ng-model="User.password" />
             </div>
 
-            {{ User.username + " " + User.password }}
+            {{ User.username + " " + User.password }} <br>
 
             <div>
               <button type="submit" id="login-button" data-role="button" data-theme="b" class="btn btn-primary">Log In</button> 
@@ -51,7 +51,9 @@
           </form>
         </div>
 
-        <div id="main-table" ng-show="show.mainTable">
+{{ pageState }}
+
+        <div id="main-table" ng-switch-when="mainTable">
           <div class="row">
             <div class="col-xs-9" role="main">
               <table id="account-data-table" class="table table-striped account-data-table">
