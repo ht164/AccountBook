@@ -92,13 +92,15 @@ var app = angular.module("ABApp", []);
    * user model
    */
   app.factory("User", function(){
+    // private.
+    // consts.
+    var LOCALSTORAGE_KEY_ACCESS_TOKEN = "token";
+
     return {
       // properties.
       username: "",
       password: "",
-
-      // consts
-      LOCALSTORAGE_KEY_ACCESS_TOKEN: "token",
+      login: false,
 
       // methods.
       /**
@@ -109,7 +111,8 @@ var app = angular.module("ABApp", []);
         var callbacks = {
           success: function(){
             // save access token to localStorage.
-            localStorage.setItem(me.LOCALSTORAGE_KEY_ACCESS_TOKEN, KiiUser.getCurrentUser().getAccessToken());
+            localStorage.setItem(LOCALSTORAGE_KEY_ACCESS_TOKEN, KiiUser.getCurrentUser().getAccessToken());
+            me.login = true;
             onSuccess();
           },
           failure: function(){
@@ -126,16 +129,30 @@ var app = angular.module("ABApp", []);
       loginAccessToken: function(onSuccess, onFailure){
         var me = this;
         // get access token from localStorage.
-        var token = localStorage.getItem(me.LOCALSTORAGE_KEY_ACCESS_TOKEN);
+        var token = localStorage.getItem(LOCALSTORAGE_KEY_ACCESS_TOKEN);
         if (!token) {
           onFailure();
         }
         var callbacks = {
-          success: onSuccess,
+          success: function(){
+            me.login = true;
+            onSuccess();
+          },
           failure: onFailure
         };
         KiiUser.authenticateWithToken(token, callbacks);
       },
+
+      /**
+       * logout.
+       * disable access key and remove from local storage.
+       */
+      logout: function(){
+        var me = this;
+        Kii.setAccessTokenExpiration(1);
+        localStorage.removeItem(LOCALSTORAGE_KEY_ACCESS_TOKEN);
+        me.login = false;
+      }
     };
   });
 
@@ -499,6 +516,18 @@ var app = angular.module("ABApp", []);
         name: me.name
       };
     }
+  });
+
+  /**
+   * header area controller.
+   */
+  app.controller("headerAreaController", function($scope, User){
+    $scope.login = User.login;
+
+    // methods.
+    $scope.logout = function(){
+      User.logout();
+    };
   });
 
 })(app);
