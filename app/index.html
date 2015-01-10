@@ -16,40 +16,41 @@
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
-  <body>
+  <body ng-app="ABApp" ng-controller="pageController">
     <!--[if lt IE 10]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
 
     <div class="container">
-      <div class="header">
+      <div class="header" ng-controller="headerAreaController">
         <ul class="nav nav-pills pull-right" id="topnavi-menu">
           <li class="active"><a href="#">Home</a></li>
+          <li ng-show="user.isLoggedIn"><a href="#" ng-click="logout()">Logout</a></li>
         </ul>
         <h3 class="text-muted">AccountBook</h3>
       </div>
 
-      <div data-role="content">
-        <div id="login-form" style="display: none;">
-          <form class="form-inline">
+      <div data-role="content" ng-switch="pageState">
+        <div id="login-form" ng-switch-when="loginForm" ng-controller="loginFormController" ng-init="init()">
+          <form class="form-inline" ng-submit="login()">
             <div>
               <label for="basic">Username:</label>
-              <input id="username" type="text" name="name" id="basic" value=""  class="form-control" />                
+              <input id="username" type="text" name="name" id="basic" value=""  class="form-control" ng-model="User.username" />                
             </div>
 
             <div>
               <label for="basic">Password:</label>
-              <input id="password" type="password" name="name" id="basic" value="" class="form-control" />
+              <input id="password" type="password" name="name" id="basic" value="" class="form-control" ng-model="User.password" />
             </div>
 
             <div>
-              <button type="button" id="login-button" data-role="button" data-theme="b" class="btn btn-primary">Log In</button> 
+              <button type="submit" id="login-button" data-role="button" data-theme="b" class="btn btn-primary">Log In</button> 
             </div>
           </form>
         </div>
 
-        <div id="main-table" style="display: none;">
+        <div id="main-table" ng-switch-when="mainTable" ng-controller="mainTableController">
           <div class="row">
             <div class="col-xs-9" role="main">
               <table id="account-data-table" class="table table-striped account-data-table">
@@ -62,20 +63,34 @@
                     <th></th>
                   </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                  <tr ng-repeat="account in accountData.accounts" data-id="{{ account.id }}">
+                    <td>{{ account.date }}</td>
+                    <td>{{ account.name }}</td>
+                    <td>
+                      <span class="tag" ng-repeat="tagId in account.tags">
+                        {{ tags[tagId] }}
+                      </span>
+                    </td>
+                    <td>{{ account.price }}</td>
+                    <td><button class="btn btn-default btn-xs remove-data-button" ng-click="remove($event)"><span class="glyphicon glyphicon-remove"></span></button></td>
+                  </tr>
+                </tbody>
               </table>
             </div>
             <div class="col-xs-3">
-              <div class="total"><span id="total-price">XXX</span> yen</div>
-              <div class="total-tag" id="total-per-tag"></div>
+              <div ng-controller="sumTotalController">
+                <div class="total"><span id="total-price">{{ total.all }}</span> yen</div>
+                <div class="total-tag" id="total-per-tag"></div>
+              </div>
               <button class="btn btn-primary" data-toggle="modal" data-target="#addModal">Add</button>
-              <button class="btn btn-default" id="reload-main-table"><span class="glyphicon glyphicon-refresh"></span></button>
+              <button class="btn btn-default" ng-click="load()"><span class="glyphicon glyphicon-refresh"></span></button>
               <button class="btn btn-default" data-toggle="modal" data-target="#editTagModal">Edit tag</button>
             </div>
           </div>
 
           <!-- add data modal -->
-          <div class="modal fade add-data-modal" id="addModal" role="dialog" aria-hidden="true">
+          <div class="modal fade add-data-modal" id="addModal" role="dialog" aria-hidden="true" ng-controller="createDataController">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -86,33 +101,38 @@
                   <table>
                     <tr>
                       <td>Date</td>
-                      <td><input type="text" id="add-data-date" class="form-control" placeholder="(ex) 2015-01-01"></td>
+                      <td><input type="text" id="add-data-date" class="form-control" placeholder="(ex) 2015-01-01" ng-model="account.date"></td>
                     </tr>
                     <tr>
                       <td>Name</td>
-                      <td><input type="text" id="add-data-name" class="form-control" placeholder="(ex) bag, lunch, park fee, etc..."></td>
+                      <td><input type="text" id="add-data-name" class="form-control" placeholder="(ex) bag, lunch, park fee, etc..." ng-model="account.name"></td>
                     </tr>
                     <tr>
                       <td>Tags</td>
-                      <td><div id="add-data-tag-area" class="tag-area"></div></td>
+                      <td><div class="tag-area">
+                        <span ng-repeat="(id, tag) in tags">
+                          <input type="checkbox" ng-model="account.tags[id]">
+                          <span class="tag">{{ tag }}</span>
+                        </span>
+                      </div></td>
                     </tr>
                     <tr>
                       <td>Price</td>
-                      <td><input type="text" id="add-data-price" class="form-control" placeholder="(ex) 10000"></td>
+                      <td><input type="text" id="add-data-price" class="form-control" placeholder="(ex) 10000" ng-model="account.price"></td>
                     </tr>
                   </table>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                   <button type="button" id="add-data-add" class="btn btn-primary">Add</button>
-                  <button type="button" id="add-data-add-inarow" class="btn btn-success">Add in a row</button>
+                  <button type="button" class="btn btn-success" ng-click="create()">Add in a row</button>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- edit tag modal -->
-          <div class="modal fade edit-tag-modal" id="editTagModal" role="dialog" aria-hidden="true">
+          <div class="modal fade edit-tag-modal" id="editTagModal" role="dialog" aria-hidden="true" ng-controller="editTagController">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -122,11 +142,15 @@
                 <div class="modal-body">
                   <h4>Create new tag</h4>
                   <div class="form-inline">
-                    <input type="text" class="form-control" id="create-tag-name" placeholder="new tag name">
-                    <button class="btn btn-default" id="create-new-tag">Create</button>
+                    <input type="text" class="form-control" placeholder="new tag name" ng-model="newTag.name">
+                    <button class="btn btn-default" ng-click="create()">Create</button>
                   </div>
                   <h4>Edit tag</h4>
-                  <div id="edit-tag-area" class="tag-area"></div>
+                  <div id="edit-tag-area" class="tag-area">
+                    <span class="tag" ng-repeat="tag in tags">
+                      {{ tag }}
+                    </span>
+                  </div>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -163,6 +187,8 @@
        <script src="bower_components/bootstrap/js/tab.js"></script>
 
        <!-- endbuild -->
+
+    <script src="bower_components/angularjs/angular.js"></script>
 
     <script src="bower_components/underscore/underscore.js"></script>
     <script src="bower_components/momentjs/moment.js"></script>
