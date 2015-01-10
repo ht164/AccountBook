@@ -92,7 +92,7 @@
           </div>
 
           <!-- add data modal -->
-          <div class="modal fade add-data-modal" id="addModal" role="dialog" aria-hidden="true">
+          <div class="modal fade add-data-modal" id="addModal" role="dialog" aria-hidden="true" ng-controller="createDataController">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -103,11 +103,11 @@
                   <table>
                     <tr>
                       <td>Date</td>
-                      <td><input type="text" id="add-data-date" class="form-control" placeholder="(ex) 2015-01-01"></td>
+                      <td><input type="text" id="add-data-date" class="form-control" placeholder="(ex) 2015-01-01" ng-model="account.date"></td>
                     </tr>
                     <tr>
                       <td>Name</td>
-                      <td><input type="text" id="add-data-name" class="form-control" placeholder="(ex) bag, lunch, park fee, etc..."></td>
+                      <td><input type="text" id="add-data-name" class="form-control" placeholder="(ex) bag, lunch, park fee, etc..." ng-model="account.name"></td>
                     </tr>
                     <tr>
                       <td>Tags</td>
@@ -115,14 +115,14 @@
                     </tr>
                     <tr>
                       <td>Price</td>
-                      <td><input type="text" id="add-data-price" class="form-control" placeholder="(ex) 10000"></td>
+                      <td><input type="text" id="add-data-price" class="form-control" placeholder="(ex) 10000" ng-model="account.price"></td>
                     </tr>
                   </table>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                   <button type="button" id="add-data-add" class="btn btn-primary">Add</button>
-                  <button type="button" id="add-data-add-inarow" class="btn btn-success">Add in a row</button>
+                  <button type="button" class="btn btn-success" ng-click="create()">Add in a row</button>
                 </div>
               </div>
             </div>

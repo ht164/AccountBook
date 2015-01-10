@@ -257,6 +257,28 @@ var app = angular.module("ABApp", []);
 
         bk.executeQuery(query, callbacks);
       },
+
+      /**
+       * save 1 data to KiiCloud.
+       */
+      save: function(account){
+        var user = KiiUser.getCurrentUser();
+        var bk = user.bucketWithName(BUCKET_NAME_ACCOUNT);
+
+        var obj = bk.createObject();
+        obj.set("date", account.date);
+        obj.set("name", account.name);
+        obj.set("tags", account.tags);
+        obj.set("price", account.price);
+
+        obj.save({
+          success: function(theObject){
+          },
+          failure: function(theObject, errorString){
+            console.log(errorString);
+          }
+        });
+      },
     };
   });
 
@@ -316,6 +338,45 @@ var app = angular.module("ABApp", []);
    */
   app.controller("sumTotalController", function($scope, accountData, tagData){
     $scope.total = accountData.totalPrice;
+  });
+
+  /**
+   * create account data controller.
+   */
+  app.controller("createDataController", function($scope, accountData, accountSave){
+    $scope.account = accountSave;
+
+    // methods.
+    /**
+     * create account data.
+     */
+    $scope.create = function(){
+      accountData.save(accountSave.getValidData());
+    };
+  });
+
+  /**
+   * create account data model.
+   */
+  app.value("accountSave", {
+    date: null,
+    name: "",
+    tags: {},
+    price: 0,
+
+    // methods.
+    /**
+     * return valid account save data.
+     */
+    getValidData: function(){
+      var me = this;
+      return {
+        date: new Date(me.date),
+        name: me.name,
+        tags: me.tags,
+        price: parseInt(me.price, 10)
+      };
+    }
   });
 
 })(app);
