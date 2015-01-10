@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
-  <body>
+  <body ng-app="ABApp" ng-controller="pageController">
     <!--[if lt IE 10]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -31,25 +31,27 @@
       </div>
 
       <div data-role="content">
-        <div id="login-form" style="display: none;">
-          <form class="form-inline">
+        <div id="login-form" ng-show="show.loginForm" ng-controller="loginFormController">
+          <form class="form-inline" ng-submit="login()">
             <div>
               <label for="basic">Username:</label>
-              <input id="username" type="text" name="name" id="basic" value=""  class="form-control" />                
+              <input id="username" type="text" name="name" id="basic" value=""  class="form-control" ng-model="User.username" />                
             </div>
 
             <div>
               <label for="basic">Password:</label>
-              <input id="password" type="password" name="name" id="basic" value="" class="form-control" />
+              <input id="password" type="password" name="name" id="basic" value="" class="form-control" ng-model="User.password" />
             </div>
 
+            {{ User.username + " " + User.password }}
+
             <div>
-              <button type="button" id="login-button" data-role="button" data-theme="b" class="btn btn-primary">Log In</button> 
+              <button type="submit" id="login-button" data-role="button" data-theme="b" class="btn btn-primary">Log In</button> 
             </div>
           </form>
         </div>
 
-        <div id="main-table" style="display: none;">
+        <div id="main-table" ng-show="show.mainTable">
           <div class="row">
             <div class="col-xs-9" role="main">
               <table id="account-data-table" class="table table-striped account-data-table">
@@ -163,6 +165,8 @@
        <script src="bower_components/bootstrap/js/tab.js"></script>
 
        <!-- endbuild -->
+
+    <script src="bower_components/angularjs/angular.js"></script>
 
     <script src="bower_components/underscore/underscore.js"></script>
     <script src="bower_components/momentjs/moment.js"></script>

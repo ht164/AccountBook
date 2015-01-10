@@ -1,5 +1,121 @@
-window.onload = function(){
+/**
+ * app main module
+ */
+var app = angular.module("ABApp", []);
+
+(function(app){
+  /**
+   * run once on page loaded.
+   */
+  app.run(function(){
     Kii.initializeWithSite("81a08656", "56ddb143a3f3be8365369d630ce650ea", KiiSite.JP);
+  });
+
+  /**
+   * page controller
+   *
+   * switch login form and main table.
+   */
+  app.controller("pageController", function($scope){
+    // on boot, show login form and hide main table.
+    $scope.show = {
+      loginForm: true,
+      mainTable: false
+    };
+
+    //methods.
+    /**
+     * change page to main table.
+     */
+    $scope.showMainTable = function(){
+      $scope.show.mainTable = true;
+      $scope.show.loginForm = false;
+    };
+
+    /**
+     * change page to login form.
+     */
+    $scope.showLoginForm = function(){
+      $scope.show.loginForm = true;
+      $scope.show.mainTable = false;
+    };
+
+  });
+
+  /**
+   * login form controller
+   */
+  app.controller("loginFormController", function($scope, User){
+    $scope.User = User;
+
+    // methods.
+    /**
+     * login
+     * if login success, change page to main table.
+     */
+    $scope.login = function(){
+      var onSuccess = function(){
+        // TODO: this is correct...?
+        $scope.showMainTable();
+      };
+      var onFailure = function(){
+        // TODO: show login failed.
+        alert("failure");
+      };
+      User.login(onSuccess, onFailure);
+    }
+  });
+
+  /**
+   * user model
+   */
+  app.factory("User", function(){
+    return {
+      // properties.
+      username: "",
+      password: "",
+
+      // consts
+      LOCALSTORAGE_KEY_ACCESS_TOKEN: "token",
+
+      // methods.
+      /**
+       * login using username and password.
+       */
+      login: function(onSuccess, onFailure){
+        var me = this;
+        var callbacks = {
+          success: function(){
+            // save access token to localStorage.
+            localStorage.setItem(me.LOCALSTORAGE_KEY_ACCESS_TOKEN, KiiUser.getCurrentUser().getAccessToken());
+            onSuccess();
+          },
+          failure: function(){
+            onFailure();
+          }
+        };
+        KiiUser.authenticate(me.username, me.password, callbacks);
+      },
+
+      /**
+       * login using access token.
+       */
+      loginAccessToken: function(onSuccess, onFailure){
+        var callbacks = {
+          success: onSuccess,
+          failure: onFailure
+        };
+        KiiUser.authenticateWithToken(token, callbacks);
+      },
+    };
+  });
+  
+})(app);
+
+
+
+window.onload = function(){
+    /*Kii.initializeWithSite("81a08656", "56ddb143a3f3be8365369d630ce650ea", KiiSite.JP);
 
     // if already logged in, show main table.
     // otherwise, show login form.
@@ -7,7 +123,7 @@ window.onload = function(){
       AB.main.initMainPage();
     } else {
       AB.auth.initLoginPage();
-    }
+    }*/
 
 };
 
