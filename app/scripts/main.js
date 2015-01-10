@@ -191,13 +191,26 @@ var app = angular.module("ABApp", []);
     // consts
     var BUCKET_NAME_ACCOUNT = "account";
 
+    // methods.
+    /**
+     * calc total price.
+     */
+    function calcTotalPrice(accounts){
+      var totalPrice = _.reduce(accounts, function(memo, account){
+        return memo + account.price;
+      }, 0);
+      return totalPrice;
+    }
+
     return {
       // properties.
       // account array.
       accounts: [],
       // total price.
-      totalPrice: 0,
-      totalPricePerTag: {},
+      totalPrice: {
+        all: 0,
+        perTag: {}
+      },
 
       // methods.
       /**
@@ -211,8 +224,8 @@ var app = angular.module("ABApp", []);
 
         // reset
         me.accounts = [];
-        me.totalPrice = 0;
-        me.pricePerTag = {};
+        me.totalPrice.all = 0;
+        me.totalPrice.perTag = {};
 
         // TODO: condition
         var query = KiiQuery.queryWithClause();
@@ -232,7 +245,7 @@ var app = angular.module("ABApp", []);
             if (nextQuery) {
               bk.executeQuery(nextQuery, callbacks);
             } else {
-              //me.calcTotalPrice();
+              me.totalPrice.all = calcTotalPrice(me.accounts);
               //me.calcTotalPricePerTag();
               if (onSuccess) onSuccess();
             }
@@ -243,23 +256,7 @@ var app = angular.module("ABApp", []);
         };
 
         bk.executeQuery(query, callbacks);
-
-        me.totalPrice = 1000;
-        me.totalPricePerTag = {
-          "001": 1000,
-          "002": 1000
-        };
       },
-
-      /**
-       * calc total price.
-       */
-      /*calcTotalPrice: function(){
-        this.totalPrice = _.reduce(this.accounts, function(memo, account){
-          return memo + account.price;
-        }, 0);
-        AB.main.View.emit("total", this.totalPrice);
-      },*/
     };
   });
 
@@ -291,11 +288,7 @@ var app = angular.module("ABApp", []);
    * sum total controller.
    */
   app.controller("sumTotalController", function($scope, accountData, tagData){
-    $scope.total = 0;
-
-    $scope.$watch(accountData.totalPrice, function(){
-      $scope.total = accountData.totalPrice;
-    });
+    $scope.total = accountData.totalPrice;
   });
 
 })(app);
