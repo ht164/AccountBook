@@ -188,7 +188,7 @@ var app = angular.module("ABApp", []);
         // store dummy data.
         me.accounts = [
           { id: "001",
-            date: new Date("2015-01-10"),
+            date: moment(new Date('2015-01-10')).format("YYYY-MM-DD"),
             name: "hogehoge",
             tags: [ "001", "002" ],
             price: 1000
