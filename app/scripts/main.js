@@ -145,7 +145,7 @@ var app = angular.module("ABApp", []);
   app.controller("mainTableController", function($scope, accountData, tagData){
     // properties.
     $scope.accountData = accountData;
-    $scope.tagData = tagData;
+    $scope.tags = tagData.tags;
 
     // methods.
     /**
