@@ -132,6 +132,7 @@ var app = angular.module("ABApp", []);
         var token = localStorage.getItem(LOCALSTORAGE_KEY_ACCESS_TOKEN);
         if (!token) {
           onFailure();
+          return;
         }
         var callbacks = {
           success: function(){
