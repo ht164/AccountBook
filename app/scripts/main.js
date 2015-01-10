@@ -17,7 +17,7 @@ var app = angular.module("ABApp", []);
    *
    * switch login form and main table.
    */
-  app.controller("pageController", function($scope){
+  app.controller("pageController", ["$scope", function($scope){
     // on boot, show login form and hide main table.
     var PAGE_STATE_LOGINFORM = "loginForm";
     var PAGE_STATE_MAINTABLE = "mainTable";
@@ -38,12 +38,12 @@ var app = angular.module("ABApp", []);
       $scope.pageState = PAGE_STATE_LOGINFORM;
     };
 
-  });
+  }]);
 
   /**
    * login form controller
    */
-  app.controller("loginFormController", function($scope, User){
+  app.controller("loginFormController", [ "$scope", "User", function($scope, User){
     $scope.User = User;
 
     // methods.
@@ -86,7 +86,7 @@ var app = angular.module("ABApp", []);
       };
       User.loginAccessToken(onSuccess, onFailure);
     };
-  });
+  }]);
 
   /**
    * user model
@@ -146,11 +146,10 @@ var app = angular.module("ABApp", []);
 
       /**
        * logout.
-       * disable access key and remove from local storage.
+       * remove access token from local storage.
        */
       logout: function(){
         var me = this;
-        Kii.setAccessTokenExpiration(1);
         localStorage.removeItem(LOCALSTORAGE_KEY_ACCESS_TOKEN);
         me.isLoggedIn = false;
       }
@@ -160,7 +159,7 @@ var app = angular.module("ABApp", []);
   /**
    * main table controller.
    */
-  app.controller("mainTableController", function($scope, accountData, tagData){
+  app.controller("mainTableController", [ "$scope", "accountData", "tagData", function($scope, accountData, tagData){
     // properties.
     $scope.accountData = accountData;
     $scope.tags = tagData.tags;
@@ -213,7 +212,7 @@ var app = angular.module("ABApp", []);
     $scope.$on("load", function(){
       alert("load event");
     });
-  });
+  }]);
 
   /**
    * account data model.
@@ -434,14 +433,14 @@ var app = angular.module("ABApp", []);
   /**
    * sum total controller.
    */
-  app.controller("sumTotalController", function($scope, accountData, tagData){
+  app.controller("sumTotalController", [ "$scope", "accountData", "tagData", function($scope, accountData, tagData){
     $scope.total = accountData.totalPrice;
-  });
+  }]);
 
   /**
    * create account data controller.
    */
-  app.controller("createDataController", function($scope, accountData, accountSave, tagData){
+  app.controller("createDataController", [ "$scope", "accountData", "accountSave", "tagData", function($scope, accountData, accountSave, tagData){
     $scope.account = accountSave;
     $scope.tags = tagData.tags;
 
@@ -452,7 +451,7 @@ var app = angular.module("ABApp", []);
     $scope.create = function(){
       accountData.save(accountSave.getValidData());
     };
-  });
+  }]);
 
   /**
    * create account data model.
@@ -486,7 +485,7 @@ var app = angular.module("ABApp", []);
   /**
    * edit tag controller
    */
-  app.controller("editTagController", function($scope, tagData, tagSave){
+  app.controller("editTagController", [ "$scope", "tagData", "tagSave", function($scope, tagData, tagSave){
     $scope.tags = tagData.tags;
     $scope.newTag = tagSave;
 
@@ -500,7 +499,7 @@ var app = angular.module("ABApp", []);
       };
       tagData.save(tagSave.getValidData(), onSuccess);
     };
-  });
+  }]);
 
   /**
    * create tag model.
@@ -522,7 +521,7 @@ var app = angular.module("ABApp", []);
   /**
    * header area controller.
    */
-  app.controller("headerAreaController", function($scope, User){
+  app.controller("headerAreaController", [ "$scope", "User", function($scope, User){
     $scope.user = User;
 
     // methods.
@@ -534,6 +533,6 @@ var app = angular.module("ABApp", []);
       User.logout();
       $scope.$parent.showLoginForm();
     };
-  });
+  }]);
 
 })(app);
