@@ -67,7 +67,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr ng-repeat="account in accountData.accounts">
+                  <tr ng-repeat="account in accountData.accounts" data-id="{{ account.id }}">
                     <td>{{ account.date }}</td>
                     <td>{{ account.name }}</td>
                     <td>
@@ -76,6 +76,7 @@
                       </span>
                     </td>
                     <td>{{ account.price }}</td>
+                    <td><button class="btn btn-default btn-xs remove-data-button" ng-click="remove($event)"><span class="glyphicon glyphicon-remove"></span></button></td>
                   </tr>
                 </tbody>
               </table>

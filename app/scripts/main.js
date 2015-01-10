@@ -168,6 +168,20 @@ var app = angular.module("ABApp", []);
       tagData.load(onSuccess);
     };
 
+    /**
+     * remove account data.
+     */
+    $scope.remove = function($event){
+      // get data id from tr element.
+      // event target (button)'s parent's parent's is tr.
+      var tr = $event.target.parentNode.parentNode;
+      var accountId = tr.getAttribute("data-id");
+      var onSuccess = function(){
+        $scope.$apply();
+      };
+      accountData.remove(accountId, onSuccess);
+    };
+
     // watch
     // load data when main table appears.
     $scope.$watch($scope.$parent.pageState, function(){
@@ -279,6 +293,45 @@ var app = angular.module("ABApp", []);
           }
         });
       },
+
+      /**
+       * remove 1 data from KiiCloud.
+       */
+      remove: function(id, onSuccess, onFailure){
+        // id is uri of KiiCloud.
+        var obj = KiiObject.objectWithURI(id);
+        var me = this;
+        // if success, remove from me.accounts also.
+        var _onSuccess = function(){
+          // TODO: need to fast access by id. such as hash...
+          var removedAccount = (function(accounts){
+            for (var i = 0, n = accounts.length; i < n; i++){
+              if (me.accounts[i].id === id) {
+                return {
+                  index: i,
+                  data: accounts[i]
+                };
+              }
+            }
+            return null;
+          })(me.accounts);
+          if (removedAccount !== null) {
+            // calc total.
+            me.totalPrice.all -= removedAccount.data.price;
+            // TODO: total per tag.
+            me.accounts.splice(removedAccount.index, 1);
+          }
+
+          onSuccess();
+        }
+
+        if (obj) {
+          obj.delete({
+            success: _onSuccess,
+            failure: onFailure
+          });
+        }
+      }
     };
   });
 
