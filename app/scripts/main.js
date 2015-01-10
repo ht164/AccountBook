@@ -70,8 +70,7 @@ var app = angular.module("ABApp", []);
         // TODO: show login failed.
         alert("failure");
       };
-      //User.login(onSuccess, onFailure);
-      setTimeout(onSuccess, 0);
+      User.login(onSuccess, onFailure);
     };
 
     /**
@@ -85,8 +84,7 @@ var app = angular.module("ABApp", []);
       var onFailure = function(){
         // do nothing.
       };
-      //User.loginAccessToken(onSuccess, onFailure);
-      setTimeout(onSuccess, 0);
+      User.loginAccessToken(onSuccess, onFailure);
     };
   });
 
@@ -154,14 +152,20 @@ var app = angular.module("ABApp", []);
      * load account data.
      */
     $scope.load = function(){
-      accountData.load();
+      var onSuccess = function(){
+        $scope.$apply();
+      }
+      accountData.load({}, onSuccess);
     };
 
     /**
      * load tag data.
      */
     $scope.loadTag = function(){
-      tagData.load();
+      var onSuccess = function(){
+        $scope.$apply();
+      }
+      tagData.load(onSuccess);
     };
 
     // watch
@@ -183,6 +187,10 @@ var app = angular.module("ABApp", []);
    * account data model.
    */
   app.factory("accountData", function(){
+    // private.
+    // consts
+    var BUCKET_NAME_ACCOUNT = "account";
+
     return {
       // properties.
       // account array.
@@ -194,24 +202,64 @@ var app = angular.module("ABApp", []);
       // methods.
       /**
        * load account data.
+       * from KiiCloud.
        */
-      load: function(){
+      load: function(cond, onSuccess, onFailure){
         var me = this;
-        // store dummy data.
-        me.accounts = [
-          { id: "001",
-            date: moment(new Date('2015-01-10')).format("YYYY-MM-DD"),
-            name: "hogehoge",
-            tags: [ "001", "002" ],
-            price: 1000
+        var user = KiiUser.getCurrentUser();
+        var bk = user.bucketWithName(BUCKET_NAME_ACCOUNT);
+
+        // reset
+        me.accounts = [];
+        me.totalPrice = 0;
+        me.pricePerTag = {};
+
+        // TODO: condition
+        var query = KiiQuery.queryWithClause();
+        var callbacks = {
+          success: function(queryPerformed, resultSet, nextQuery){
+            var accounts = [];
+            _.each(resultSet, function(result){
+              accounts.push({
+                id: result.objectURI(),
+                date: moment(new Date(result.get("date"))).format("YYYY-MM-DD"),
+                name: result.get("name"),
+                tags: result.get("tags"),
+                price: result.get("price")
+              });
+            });
+            me.accounts = me.accounts.concat(accounts);
+            if (nextQuery) {
+              bk.executeQuery(nextQuery, callbacks);
+            } else {
+              //me.calcTotalPrice();
+              //me.calcTotalPricePerTag();
+              if (onSuccess) onSuccess();
+            }
+          },
+          failure: function(queryPerformed, errorString){
+            if (onFailure) onFailure();
           }
-        ];
+        };
+
+        bk.executeQuery(query, callbacks);
+
         me.totalPrice = 1000;
         me.totalPricePerTag = {
           "001": 1000,
           "002": 1000
         };
-      }
+      },
+
+      /**
+       * calc total price.
+       */
+      /*calcTotalPrice: function(){
+        this.totalPrice = _.reduce(this.accounts, function(memo, account){
+          return memo + account.price;
+        }, 0);
+        AB.main.View.emit("total", this.totalPrice);
+      },*/
     };
   });
 
