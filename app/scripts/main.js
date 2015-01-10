@@ -522,11 +522,16 @@ var app = angular.module("ABApp", []);
    * header area controller.
    */
   app.controller("headerAreaController", function($scope, User){
-    $scope.login = User.login;
+    $scope.user = User;
 
     // methods.
+    /**
+     * logout.
+     * logout and move to login form page.
+     */
     $scope.logout = function(){
       User.logout();
+      $scope.$parent.pageState = "loginForm";
     };
   });
 
