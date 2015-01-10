@@ -448,6 +448,7 @@ var app = angular.module("ABApp", []);
    */
   app.controller("sumTotalController", [ "$scope", "accountData", "tagData", function($scope, accountData, tagData){
     $scope.total = accountData.totalPrice;
+    $scope.tags = tagData.tags;
   }]);
 
   /**
