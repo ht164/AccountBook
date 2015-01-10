@@ -140,8 +140,8 @@
                 <div class="modal-body">
                   <h4>Create new tag</h4>
                   <div class="form-inline">
-                    <input type="text" class="form-control" id="create-tag-name" placeholder="new tag name">
-                    <button class="btn btn-default" id="create-new-tag">Create</button>
+                    <input type="text" class="form-control" placeholder="new tag name" ng-model="newTag.name">
+                    <button class="btn btn-default" ng-click="create()">Create</button>
                   </div>
                   <h4>Edit tag</h4>
                   <div id="edit-tag-area" class="tag-area">

@@ -383,6 +383,33 @@ var app = angular.module("ABApp", []);
 
         bk.executeQuery(query, callbacks_kiiCloud);
       },
+
+      /**
+       * save tag to KiiCloud.
+       * tag id is epoch msec.
+       * if success, store new tag data in tags property.
+       * after save, call callback.
+       */
+      save: function(tag, onSuccess, onFailure){
+        var me = this;
+        var user = KiiUser.getCurrentUser();
+        var bk = user.bucketWithName(BUCKET_NAME_TAG);
+        var tagId = "" + (new Date()).getTime();
+
+        var obj = bk.createObject();
+        obj.set("id", tagId);
+        obj.set("name", tag.name);
+
+        obj.save({
+          success: function(theObject){
+            me.tags[tagId] = tag.name;
+            if (onSuccess) onSuccess();
+          },
+          failure: function(theObject, errorString){
+            if (onFailure) onFailure();
+          }
+        });
+      },
     };
   });
 
@@ -435,9 +462,37 @@ var app = angular.module("ABApp", []);
   /**
    * edit tag controller
    */
-  app.controller("editTagController", function($scope, tagData){
+  app.controller("editTagController", function($scope, tagData, tagSave){
     $scope.tags = tagData.tags;
+    $scope.newTag = tagSave;
 
+    // methods.
+    /**
+     * create new tag.
+     */
+    $scope.create = function(){
+      var onSuccess = function(){
+        $scope.$apply();
+      };
+      tagData.save(tagSave.getValidData(), onSuccess);
+    };
+  });
+
+  /**
+   * create tag model.
+   */
+  app.value("tagSave", {
+    name: "",
+
+    /**
+     * return valid tag name data.
+     */
+    getValidData: function(){
+      var me = this;
+      return {
+        name: me.name
+      };
+    }
   });
 
 })(app);
