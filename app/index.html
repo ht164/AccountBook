@@ -31,7 +31,7 @@
       </div>
 
       <div data-role="content" ng-switch="pageState">
-        <div id="login-form" ng-switch-when="loginForm" ng-controller="loginFormController">
+        <div id="login-form" ng-switch-when="loginForm" ng-controller="loginFormController" ng-init="init()">
           <form class="form-inline" ng-submit="login()">
             <div>
               <label for="basic">Username:</label>

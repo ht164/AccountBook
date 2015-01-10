@@ -8,6 +8,7 @@ var app = angular.module("ABApp", []);
    * run once on page loaded.
    */
   app.run(function(){
+    // init Kii.
     Kii.initializeWithSite("81a08656", "56ddb143a3f3be8365369d630ce650ea", KiiSite.JP);
   });
 
@@ -47,6 +48,14 @@ var app = angular.module("ABApp", []);
 
     // methods.
     /**
+     * initialize
+     * auto login.
+     */
+    $scope.init = function(){
+      $scope.loginAuto();
+    };
+
+    /**
      * login
      * if login success, change page to main table.
      */
@@ -63,7 +72,21 @@ var app = angular.module("ABApp", []);
       };
       //User.login(onSuccess, onFailure);
       setTimeout(onSuccess, 0);
-    }
+    };
+
+    /**
+     * auto login by access token.
+     */
+    $scope.loginAuto = function(){
+      var onSuccess = function(){
+        $scope.$parent.showMainTable();
+        $scope.$parent.$apply();
+      };
+      var onFailure = function(){
+        // do nothing.
+      };
+      User.loginAccessToken(onSuccess, onFailure);
+    };
   });
 
   /**
@@ -99,8 +122,15 @@ var app = angular.module("ABApp", []);
 
       /**
        * login using access token.
+       * access token is in local storage.
        */
       loginAccessToken: function(onSuccess, onFailure){
+        var me = this;
+        // get access token from localStorage.
+        var token = localStorage.getItem(me.LOCALSTORAGE_KEY_ACCESS_TOKEN);
+        if (!token) {
+          onFailure();
+        }
         var callbacks = {
           success: onSuccess,
           failure: onFailure
