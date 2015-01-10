@@ -162,7 +162,7 @@ var app = angular.module("ABApp", []);
      */
     $scope.loadTag = function(){
       tagData.load();
-    },
+    };
 
     // watch
     // load data when main table appears.
@@ -187,6 +187,9 @@ var app = angular.module("ABApp", []);
       // properties.
       // account array.
       accounts: [],
+      // total price.
+      totalPrice: 0,
+      totalPricePerTag: {},
 
       // methods.
       /**
@@ -203,6 +206,11 @@ var app = angular.module("ABApp", []);
             price: 1000
           }
         ];
+        me.totalPrice = 1000;
+        me.totalPricePerTag = {
+          "001": 1000,
+          "002": 1000
+        };
       }
     };
   });
@@ -230,6 +238,18 @@ var app = angular.module("ABApp", []);
       }
     };
   });
+
+  /**
+   * sum total controller.
+   */
+  app.controller("sumTotalController", function($scope, accountData, tagData){
+    $scope.total = 0;
+
+    $scope.$watch(accountData.totalPrice, function(){
+      $scope.total = accountData.totalPrice;
+    });
+  });
+
 })(app);
 
 // namespace AB
