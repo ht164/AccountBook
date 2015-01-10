@@ -85,7 +85,8 @@ var app = angular.module("ABApp", []);
       var onFailure = function(){
         // do nothing.
       };
-      User.loginAccessToken(onSuccess, onFailure);
+      //User.loginAccessToken(onSuccess, onFailure);
+      setTimeout(onSuccess, 0);
     };
   });
 
@@ -139,23 +140,64 @@ var app = angular.module("ABApp", []);
       },
     };
   });
-  
+
+  /**
+   * main table controller.
+   */
+  app.controller("mainTableController", function($scope, accountData){
+    // properties.
+    $scope.accountData = accountData;
+
+    // methods.
+    /**
+     * load account data.
+     */
+    $scope.load = function(){
+      accountData.load();
+    };
+
+    // watch
+    // load data when main table appears.
+    $scope.$watch($scope.$parent.pageState, function(){
+      if ($scope.$parent.pageState == "mainTable"){
+        $scope.load();
+      }
+    });
+
+    // events.
+    $scope.$on("load", function(){
+      alert("load event");
+    });
+  });
+
+  /**
+   * account data model.
+   */
+  app.factory("accountData", function(){
+    return {
+      // properties.
+      // account array.
+      accounts: [],
+
+      // methods.
+      /**
+       * load account data.
+       */
+      load: function(){
+        var me = this;
+        // store dummy data.
+        me.accounts = [
+          { id: "001",
+            date: new Date("2015-01-10"),
+            name: "hogehoge",
+            tags: [ "001", "002" ],
+            price: 1000
+          }
+        ];
+      }
+    };
+  });
 })(app);
-
-
-
-window.onload = function(){
-    /*Kii.initializeWithSite("81a08656", "56ddb143a3f3be8365369d630ce650ea", KiiSite.JP);
-
-    // if already logged in, show main table.
-    // otherwise, show login form.
-    if (KiiUser.getCurrentUser()) {
-      AB.main.initMainPage();
-    } else {
-      AB.auth.initLoginPage();
-    }*/
-
-};
 
 // namespace AB
 var AB = {
