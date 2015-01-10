@@ -112,7 +112,12 @@
                     </tr>
                     <tr>
                       <td>Tags</td>
-                      <td><div id="add-data-tag-area" class="tag-area"></div></td>
+                      <td><div class="tag-area">
+                        <span ng-repeat="(id, tag) in tags">
+                          <input type="checkbox" ng-model="account.tags[id]">
+                          <span class="tag">{{ tag }}</span>
+                        </span>
+                      </div></td>
                     </tr>
                     <tr>
                       <td>Price</td>

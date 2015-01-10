@@ -423,8 +423,9 @@ var app = angular.module("ABApp", []);
   /**
    * create account data controller.
    */
-  app.controller("createDataController", function($scope, accountData, accountSave){
+  app.controller("createDataController", function($scope, accountData, accountSave, tagData){
     $scope.account = accountSave;
+    $scope.tags = tagData.tags;
 
     // methods.
     /**
@@ -447,13 +448,18 @@ var app = angular.module("ABApp", []);
     // methods.
     /**
      * return valid account save data.
+     * convert tags property.
      */
     getValidData: function(){
       var me = this;
+      var tags = [];
+      _.each(me.tags, function(tag, key){
+        tags.push(key);
+      });
       return {
         date: new Date(me.date),
         name: me.name,
-        tags: me.tags,
+        tags: tags,
         price: parseInt(me.price, 10)
       };
     }
