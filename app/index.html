@@ -121,8 +121,7 @@
                       <td>Tags</td>
                       <td><div class="tag-area">
                         <span ng-repeat="(id, tag) in tags">
-                          <input type="checkbox" ng-model="account.tags[id]" style="display: none;">
-                          <span class="tag" data-tag-id="{{ id }}"ng-click="ui.toggleButton($event)">{{ tag }}</span>
+                          <span class="tag" data-tag-id="{{ id }}" ng-click="ui.toggleButton($event)">{{ tag }}</span>
                         </span>
                       </div></td>
                     </tr>
