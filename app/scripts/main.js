@@ -305,7 +305,7 @@ var app = angular.module("ABApp", []);
       /**
        * save 1 data to KiiCloud.
        */
-      save: function(account){
+      save: function(account, onSuccess, onFailure){
         var user = KiiUser.getCurrentUser();
         var bk = user.bucketWithName(BUCKET_NAME_ACCOUNT);
 
@@ -315,12 +315,17 @@ var app = angular.module("ABApp", []);
         obj.set("tags", account.tags);
         obj.set("price", account.price);
 
+        var _onSuccess = function(){
+          // TODO: add created data to me.accounts.
+          if (onSuccess) onSuccess();
+        };
+        var _onFailure = function(){
+          if (onFailure) onFailure();
+        }
+
         obj.save({
-          success: function(theObject){
-          },
-          failure: function(theObject, errorString){
-            console.log(errorString);
-          }
+          success: _onSuccess,
+          failure: _onFailure
         });
       },
 
@@ -462,9 +467,14 @@ var app = angular.module("ABApp", []);
     // methods.
     /**
      * create account data.
+     *
+     * @param {boolean} close close dialog or not after creating data.
      */
-    $scope.create = function(){
-      accountData.save(accountSave.getValidData());
+    $scope.create = function(close){
+      var onSuccess = close ? function(){
+        addDataDialogUI.close();
+      } : function(){};
+      accountData.save(accountSave.getValidData(), onSuccess);
     };
 
     // UI initialization.
@@ -528,6 +538,10 @@ var app = angular.module("ABApp", []);
         jqTagBtn.toggleClass("active");
         var tagId = jqTagBtn.attr("data-tag-id");
         accountSave.tags[tagId] = !accountSave.tags[tagId];
+      },
+
+      close: function(){
+        $("#addModal").modal("hide");
       }
     };
   }]);
