@@ -306,6 +306,7 @@ var app = angular.module("ABApp", []);
        * save 1 data to KiiCloud.
        */
       save: function(account, onSuccess, onFailure){
+        var me = this;
         var user = KiiUser.getCurrentUser();
         var bk = user.bucketWithName(BUCKET_NAME_ACCOUNT);
 
@@ -315,8 +316,22 @@ var app = angular.module("ABApp", []);
         obj.set("tags", account.tags);
         obj.set("price", account.price);
 
-        var _onSuccess = function(){
-          // TODO: add created data to me.accounts.
+        var _onSuccess = function(theObject){
+          // add created data to accounts.
+          me.accounts.push({
+            id: theObject.objectURI(),
+            date: moment(account.date).format("YYYY-MM-DD"),
+            name: account.name,
+            tags: account.tags,
+            price: account.price
+          });
+
+          me.totalPrice.all += account.price;
+
+          _.each(account.tags, function(tagId){
+            me.totalPrice.perTag[tagId] += account.price;
+          });
+
           if (onSuccess) onSuccess();
         };
         var _onFailure = function(){
@@ -473,7 +488,10 @@ var app = angular.module("ABApp", []);
     $scope.create = function(close){
       var onSuccess = close ? function(){
         addDataDialogUI.close();
-      } : function(){};
+        $scope.$parent.$apply();
+      } : function(){
+        $scope.$parent.$apply();
+      };
       accountData.save(accountSave.getValidData(), onSuccess);
     };
 
