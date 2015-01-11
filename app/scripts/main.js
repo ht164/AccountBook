@@ -465,6 +465,22 @@ var app = angular.module("ABApp", []);
     $scope.create = function(){
       accountData.save(accountSave.getValidData());
     };
+
+    // run on show add-data-modal.
+    var jqAddModal = $("#addModal");
+    jqAddModal.on("show.bs.modal", function(e){
+      $("#add-data-date").datepicker({
+        autoclose: true,
+        format: "yyyy-mm-dd",
+        language: "ja",
+        todayHighlight: true
+      });
+    });
+
+    // run on hide add-data-modal.
+    jqAddModal.on("hidden.bs.modal", function(e){
+      $("#add-data-date").datepicker("remove");
+    });
   }]);
 
   /**
