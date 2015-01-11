@@ -122,6 +122,13 @@ body {
   border: #ddd 1px solid;
   padding: 4px;
   margin: 2px;
+  cursor: pointer;
+  line-height: 1.75;
+}
+.add-data-modal .tag-area .tag.active {
+  background-color: #5bc0de;
+  border-color: #46b8da;
+  color: #fff;
 }
 
 .edit-tag-modal .tag-area .tag {

@@ -305,7 +305,7 @@ var app = angular.module("ABApp", []);
       /**
        * save 1 data to KiiCloud.
        */
-      save: function(account){
+      save: function(account, onSuccess, onFailure){
         var user = KiiUser.getCurrentUser();
         var bk = user.bucketWithName(BUCKET_NAME_ACCOUNT);
 
@@ -315,12 +315,17 @@ var app = angular.module("ABApp", []);
         obj.set("tags", account.tags);
         obj.set("price", account.price);
 
+        var _onSuccess = function(){
+          // TODO: add created data to me.accounts.
+          if (onSuccess) onSuccess();
+        };
+        var _onFailure = function(){
+          if (onFailure) onFailure();
+        }
+
         obj.save({
-          success: function(theObject){
-          },
-          failure: function(theObject, errorString){
-            console.log(errorString);
-          }
+          success: _onSuccess,
+          failure: _onFailure
         });
       },
 
@@ -454,33 +459,26 @@ var app = angular.module("ABApp", []);
   /**
    * create account data controller.
    */
-  app.controller("createDataController", [ "$scope", "accountData", "accountSave", "tagData", function($scope, accountData, accountSave, tagData){
+  app.controller("createDataController", [ "$scope", "accountData", "accountSave", "tagData", "addDataDialogUI", function($scope, accountData, accountSave, tagData, addDataDialogUI){
     $scope.account = accountSave;
     $scope.tags = tagData.tags;
+    $scope.ui = addDataDialogUI;
 
     // methods.
     /**
      * create account data.
+     *
+     * @param {boolean} close close dialog or not after creating data.
      */
-    $scope.create = function(){
-      accountData.save(accountSave.getValidData());
+    $scope.create = function(close){
+      var onSuccess = close ? function(){
+        addDataDialogUI.close();
+      } : function(){};
+      accountData.save(accountSave.getValidData(), onSuccess);
     };
 
-    // run on show add-data-modal.
-    var jqAddModal = $("#addModal");
-    jqAddModal.on("show.bs.modal", function(e){
-      $("#add-data-date").datepicker({
-        autoclose: true,
-        format: "yyyy-mm-dd",
-        language: "ja",
-        todayHighlight: true
-      });
-    });
-
-    // run on hide add-data-modal.
-    jqAddModal.on("hidden.bs.modal", function(e){
-      $("#add-data-date").datepicker("remove");
-    });
+    // UI initialization.
+    addDataDialogUI.init();
   }]);
 
   /**
@@ -500,8 +498,8 @@ var app = angular.module("ABApp", []);
     getValidData: function(){
       var me = this;
       var tags = [];
-      _.each(me.tags, function(tag, key){
-        tags.push(key);
+      _.each(me.tags, function(val, key){
+        if (val) tags.push(key);
       });
       return {
         date: new Date(me.date),
@@ -511,6 +509,42 @@ var app = angular.module("ABApp", []);
       };
     }
   });
+
+  /**
+   * add data dialog UI depended code.
+   */
+  app.factory("addDataDialogUI", ["accountSave", function(accountSave){
+    return {
+      init: function(){
+        // run on show add-data-modal.
+        var jqAddModal = $("#addModal");
+        jqAddModal.on("show.bs.modal", function(e){
+          $("#add-data-date").datepicker({
+            autoclose: true,
+            format: "yyyy-mm-dd",
+            language: "ja",
+            todayHighlight: true
+          });
+        });
+
+        // run on hide add-data-modal.
+        jqAddModal.on("hidden.bs.modal", function(e){
+          $("#add-data-date").datepicker("remove");
+        });
+      },
+
+      toggleButton: function($event){
+        var jqTagBtn = $($event.target);
+        jqTagBtn.toggleClass("active");
+        var tagId = jqTagBtn.attr("data-tag-id");
+        accountSave.tags[tagId] = !accountSave.tags[tagId];
+      },
+
+      close: function(){
+        $("#addModal").modal("hide");
+      }
+    };
+  }]);
 
   /**
    * edit tag controller
