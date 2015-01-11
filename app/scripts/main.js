@@ -368,7 +368,10 @@ var app = angular.module("ABApp", []);
           if (removedAccount !== null) {
             // calc total.
             me.totalPrice.all -= removedAccount.data.price;
-            // TODO: total per tag.
+            // calc totel per tag.
+            _.each(removedAccount.data.tags, function(tagId){
+              me.totalPrice.perTag[tagId] -= removedAccount.data.price;
+            });
             me.accounts.splice(removedAccount.index, 1);
           }
 
