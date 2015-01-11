@@ -454,9 +454,10 @@ var app = angular.module("ABApp", []);
   /**
    * create account data controller.
    */
-  app.controller("createDataController", [ "$scope", "accountData", "accountSave", "tagData", function($scope, accountData, accountSave, tagData){
+  app.controller("createDataController", [ "$scope", "accountData", "accountSave", "tagData", "addDataDialogUI", function($scope, accountData, accountSave, tagData, addDataDialogUI){
     $scope.account = accountSave;
     $scope.tags = tagData.tags;
+    $scope.ui = addDataDialogUI;
 
     // methods.
     /**
@@ -466,21 +467,8 @@ var app = angular.module("ABApp", []);
       accountData.save(accountSave.getValidData());
     };
 
-    // run on show add-data-modal.
-    var jqAddModal = $("#addModal");
-    jqAddModal.on("show.bs.modal", function(e){
-      $("#add-data-date").datepicker({
-        autoclose: true,
-        format: "yyyy-mm-dd",
-        language: "ja",
-        todayHighlight: true
-      });
-    });
-
-    // run on hide add-data-modal.
-    jqAddModal.on("hidden.bs.modal", function(e){
-      $("#add-data-date").datepicker("remove");
-    });
+    // UI initialization.
+    addDataDialogUI.init();
   }]);
 
   /**
@@ -500,8 +488,8 @@ var app = angular.module("ABApp", []);
     getValidData: function(){
       var me = this;
       var tags = [];
-      _.each(me.tags, function(tag, key){
-        tags.push(key);
+      _.each(me.tags, function(val, key){
+        if (val) tags.push(key);
       });
       return {
         date: new Date(me.date),
@@ -511,6 +499,38 @@ var app = angular.module("ABApp", []);
       };
     }
   });
+
+  /**
+   * add data dialog UI depended code.
+   */
+  app.factory("addDataDialogUI", ["accountSave", function(accountSave){
+    return {
+      init: function(){
+        // run on show add-data-modal.
+        var jqAddModal = $("#addModal");
+        jqAddModal.on("show.bs.modal", function(e){
+          $("#add-data-date").datepicker({
+            autoclose: true,
+            format: "yyyy-mm-dd",
+            language: "ja",
+            todayHighlight: true
+          });
+        });
+
+        // run on hide add-data-modal.
+        jqAddModal.on("hidden.bs.modal", function(e){
+          $("#add-data-date").datepicker("remove");
+        });
+      },
+
+      toggleButton: function($event){
+        var jqTagBtn = $($event.target);
+        jqTagBtn.toggleClass("active");
+        var tagId = jqTagBtn.attr("data-tag-id");
+        accountSave.tags[tagId] = !accountSave.tags[tagId];
+      }
+    };
+  }]);
 
   /**
    * edit tag controller
