@@ -467,15 +467,19 @@ var app = angular.module("ABApp", []);
     };
 
     // run on show add-data-modal.
-    $("#addModal").on("show.bs.modal", function(e){
-      var dateInput = $("#add-data-date");
-      dateInput.val(moment().format("YYYY-MM-DD"));
-      dateInput.datepicker({
+    var jqAddModal = $("#addModal");
+    jqAddModal.on("show.bs.modal", function(e){
+      $("#add-data-date").datepicker({
         autoclose: true,
         format: "yyyy-mm-dd",
-        language: "ja-JP",
+        language: "ja",
         todayHighlight: true
       });
+    });
+
+    // run on hide add-data-modal.
+    jqAddModal.on("hidden.bs.modal", function(e){
+      $("#add-data-date").datepicker("remove");
     });
   }]);
 
