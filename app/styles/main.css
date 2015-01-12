@@ -88,6 +88,10 @@ body {
   }
 }
 
+.account-data-table thead th {
+  cursor: pointer;
+}
+
 .account-data-table .price {
   text-align: right;
 }
