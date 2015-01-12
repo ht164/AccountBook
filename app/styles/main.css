@@ -88,6 +88,10 @@ body {
   }
 }
 
+.account-data-table .price {
+  text-align: right;
+}
+
 .area-block {
   margin: 6px 2px;
 }
