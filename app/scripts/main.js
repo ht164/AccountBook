@@ -521,6 +521,15 @@ var app = angular.module("ABApp", []);
    */
   app.controller("rangeSelectController", [ "$scope", "dateRange", function($scope, dateRange){
     $scope.range = dateRange;
+
+    // watch range selected.
+    // if changed, reload main table.
+    $scope.$watch("range.selected", function(value, before){
+      // ignore trigger when init.
+      if (value !== before) {
+        alert(value + "/" + before);
+      }
+    });
   }]);
 
   /**
