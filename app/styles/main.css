@@ -92,6 +92,10 @@ body {
   text-align: right;
 }
 
+.account-data-table .sort-indicator {
+  float: right;
+}
+
 .area-block {
   margin: 6px 2px;
 }

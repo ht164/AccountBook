@@ -57,10 +57,10 @@
               <table id="account-data-table" class="table table-striped account-data-table">
                 <thead>
                   <tr>
-                    <th>date</th>
-                    <th>name</th>
-                    <th>tags</th>
-                    <th>price</th>
+                    <th ng-repeat="colName in ['date', 'name', 'tags', 'price']">{{ colName }}
+                      <div class="sort-indicator" ng-if="accountData.sorted[colName] && accountData.sortDirection"><span class="glyphicon glyphicon-chevron-up"></span></div>
+                      <div class="sort-indicator" ng-if="accountData.sorted[colName] && !accountData.sortDirection"><span class="glyphicon glyphicon-chevron-down"></span></div>
+                    </th>
                     <th></th>
                   </tr>
                 </thead>

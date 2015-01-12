@@ -255,6 +255,15 @@ var app = angular.module("ABApp", []);
         all: 0,
         perTag: {}
       },
+      // sort column.
+      sorted: {
+        "date": true,
+        "name": false,
+        "tags": false,
+        "price": false
+      },
+      // sort direction. true is ascend, false is descend.
+      sortDirection: true,
 
       // methods.
       /**
