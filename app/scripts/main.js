@@ -517,6 +517,50 @@ var app = angular.module("ABApp", []);
   }]);
 
   /**
+   * range select controller.
+   */
+  app.controller("rangeSelectController", [ "$scope", "dateRange", function($scope, dateRange){
+    $scope.range = dateRange;
+  }]);
+
+  /**
+   * date range.
+   */
+  app.value("dateRange", {
+    // html select options.
+    options: [{
+      num: 1,
+      label: "This month"
+    }, {
+      num: 2,
+      label: "Last month"
+    }, {
+      num: 3,
+      label: "This year"
+    }, {
+      num: 4,
+      label: "Last year"
+    }, {
+      num: 5,
+      label: "Other"
+    }],
+
+    // consts.
+    THIS_MONTH: 1,
+    LAST_MONTH: 2,
+    THIS_YEAR: 3,
+    LAST_YEAR: 4,
+    MANUAL_RANGE: 5,
+
+    // selected range. default is "this month".
+    selected: 1,
+
+    // manual range.
+    start: null,
+    end: null
+  });
+
+  /**
    * create account data controller.
    */
   app.controller("createDataController", [ "$scope", "accountData", "accountSave", "tagData", "addDataDialogUI", function($scope, accountData, accountSave, tagData, addDataDialogUI){
