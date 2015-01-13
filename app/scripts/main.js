@@ -159,7 +159,7 @@ var app = angular.module("ABApp", []);
   /**
    * main table controller.
    */
-  app.controller("mainTableController", [ "$scope", "accountData", "tagData", function($scope, accountData, tagData){
+  app.controller("mainTableController", [ "$scope", "accountData", "tagData", "dateRange", function($scope, accountData, tagData, dateRange){
     // properties.
     $scope.accountData = accountData;
     $scope.tags = tagData.tags;
@@ -169,10 +169,13 @@ var app = angular.module("ABApp", []);
      * load account data.
      */
     $scope.load = function(){
+      // generate condition.
+      var cond = dateRange.generateCondition();
+      // callback.
       var onSuccess = function(){
         $scope.$apply();
       }
-      accountData.load({}, onSuccess);
+      accountData.load(cond, onSuccess);
     };
 
     /**
@@ -281,14 +284,29 @@ var app = angular.module("ABApp", []);
         var me = this;
         var user = KiiUser.getCurrentUser();
         var bk = user.bucketWithName(BUCKET_NAME_ACCOUNT);
+        cond = cond || {};
 
         // reset
         me.accounts = [];
         me.totalPrice.all = 0;
         me.totalPrice.perTag = {};
 
-        // TODO: condition
-        var query = KiiQuery.queryWithClause();
+        // condition
+        var clauses = [];
+        // date range
+        if (cond.startDate) {
+          clauses.push(KiiClause.greaterThanOrEqual("date", cond.startDate));
+        }
+        if (cond.endDate) {
+          clauses.push(KiiClause.lessThanOrEqual("date", cond.endDate));
+        }
+        // TODO: condition of tag, etc...
+
+        var totalClause = KiiClause.and.apply(this, clauses);
+
+        var query = (clauses.length > 0)
+          ? KiiQuery.queryWithClause(totalClause)
+          : KiiQuery.queryWithClause();
         var callbacks = {
           success: function(queryPerformed, resultSet, nextQuery){
             var accounts = [];
@@ -515,6 +533,95 @@ var app = angular.module("ABApp", []);
     $scope.total = accountData.totalPrice;
     $scope.tags = tagData.tags;
   }]);
+
+  /**
+   * range select controller.
+   */
+  app.controller("rangeSelectController", [ "$scope", "dateRange", function($scope, dateRange){
+    $scope.range = dateRange;
+
+    // watch range selected.
+    // if changed, reload main table.
+    $scope.$watch("range.selected", function(value, before){
+      // ignore trigger when init.
+      if (value !== before) {
+        $scope.$parent.load();
+      }
+    });
+  }]);
+
+  /**
+   * date range.
+   */
+  app.value("dateRange", {
+    // consts.
+    THIS_MONTH: 1,
+    LAST_MONTH: 2,
+    THIS_YEAR: 3,
+    LAST_YEAR: 4,
+    MANUAL_RANGE: 5,
+
+    // html select options.
+    options: [{
+      num: 1,
+      label: "This month"
+    }, {
+      num: 2,
+      label: "Last month"
+    }, {
+      num: 3,
+      label: "This year"
+    }, {
+      num: 4,
+      label: "Last year"
+    }, {
+      num: 5,
+      label: "Other"
+    }],
+
+    // properties.
+    // selected range. default is "this month".
+    selected: 1,
+
+    // manual range.
+    start: null,
+    end: null,
+
+    // methods.
+    /**
+     * generate condition object.
+     */
+    generateCondition: function(){
+      var me = this;
+      var startYear, endYear, startMonth, endMonth;
+      var m = moment();
+      var startDate, endDate;
+      switch(me.selected){
+        case me.LAST_MONTH:
+          m.subtract(1, "months");
+        case me.THIS_MONTH:
+          startYear = endYear = m.year();
+          startMonth = endMonth = m.month();
+          break;
+
+        case me.LAST_YEAR:
+          m.subtract(1, "years");
+        case me.THIS_YEAR:
+          startYear = endYear = m.year();
+          startMonth = 0;
+          endMonth = 11;
+          break;
+      }
+      startDate = moment([startYear, startMonth, 1]).format("YYYY-MM-DD");
+      endDate = moment([endYear, endMonth, moment([endYear, endMonth]).daysInMonth()]).format("YYYY-MM-DD");
+
+      var cond = {};
+      if (startDate) cond.startDate = startDate;
+      if (endDate) cond.endDate = endDate;
+
+      return cond;
+    }
+  });
 
   /**
    * create account data controller.
