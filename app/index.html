@@ -95,10 +95,9 @@
                 <div class="area-block">
                   <div>Range: 
                     <select class="form-control" ng-model="range.selected" ng-options="opt.num as opt.label for opt in range.options"></select>
-                    {{ range.selected }}
                   </div>
                 </div>
-                <div id="mainTableDateRange" class="input-daterange input-group">
+                <div id="mainTableDateRange" class="input-daterange input-group" ng-if="range.selected===range.MANUAL_RANGE">
                   <input type="text" class="input-sm form-control">
                   <span class="input-group-addon">to</span>
                   <input type="text" class="input-sm form-control">
