@@ -593,17 +593,27 @@ var app = angular.module("ABApp", []);
      */
     generateCondition: function(){
       var me = this;
+      var startYear, endYear, startMonth, endMonth;
+      var m = moment();
       var startDate, endDate;
       switch(me.selected){
+        case me.LAST_MONTH:
+          m.subtract(1, "months");
         case me.THIS_MONTH:
-          (function(){
-            var year = moment().year();
-            var month = moment().month();
-            startDate = moment([year, month, 1]).format("YYYY-MM-DD");
-            endDate = moment([year, month, moment([year, month]).daysInMonth()]).format("YYYY-MM-DD");
-          })();
+          startYear = endYear = m.year();
+          startMonth = endMonth = m.month();
+          break;
+
+        case me.LAST_YEAR:
+          m.subtract(1, "years");
+        case me.THIS_YEAR:
+          startYear = endYear = m.year();
+          startMonth = 0;
+          endMonth = 11;
           break;
       }
+      startDate = moment([startYear, startMonth, 1]).format("YYYY-MM-DD");
+      endDate = moment([endYear, endMonth, moment([endYear, endMonth]).daysInMonth()]).format("YYYY-MM-DD");
 
       var cond = {};
       if (startDate) cond.startDate = startDate;
