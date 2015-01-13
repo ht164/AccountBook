@@ -199,6 +199,13 @@ var app = angular.module("ABApp", []);
       accountData.remove(accountId, onSuccess);
     };
 
+    /**
+     * change sort column and direction.
+     */
+    $scope.sort = function(column){
+      accountData.sort(column);
+    };
+
     // watch
     // load data when main table appears.
     $scope.$watch($scope.$parent.pageState, function(){
@@ -255,6 +262,15 @@ var app = angular.module("ABApp", []);
         all: 0,
         perTag: {}
       },
+      // sort column.
+      sorted: {
+        "date": true,
+        "name": false,
+        "tags": false,
+        "price": false
+      },
+      // sort direction. true is ascend, false is descend.
+      sortDirection: true,
 
       // methods.
       /**
@@ -383,6 +399,32 @@ var app = angular.module("ABApp", []);
             success: _onSuccess,
             failure: onFailure
           });
+        }
+      },
+
+      /**
+       * sort by column data.
+       * if "column" is same as sort-column, change direction.
+       * otherwise, sort by "column" and direction is ascend.
+       */
+      sort: function(column){
+        var me = this;
+        if (me.sorted[column]) {
+          me.sortDirection = !me.sortDirection;
+        } else {
+          _.each(me.sorted, function(v, k){
+            me.sorted[k] = false;
+          });
+          me.sorted[column] = true;
+          me.sortDirection = true;
+        }
+
+        // sort.
+        me.accounts = _.sortBy(me.accounts, function(account){
+          return account[column];
+        });
+        if (!me.sortDirection){
+          me.accounts.reverse();
         }
       }
     };
