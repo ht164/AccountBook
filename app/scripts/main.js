@@ -168,11 +168,11 @@ var app = angular.module("ABApp", []);
     /**
      * load account data.
      */
-    $scope.load = function(){
+    $scope.load = function(cond){
       var onSuccess = function(){
         $scope.$apply();
       }
-      accountData.load({}, onSuccess);
+      accountData.load(cond, onSuccess);
     };
 
     /**
@@ -281,14 +281,29 @@ var app = angular.module("ABApp", []);
         var me = this;
         var user = KiiUser.getCurrentUser();
         var bk = user.bucketWithName(BUCKET_NAME_ACCOUNT);
+        cond = cond || {};
 
         // reset
         me.accounts = [];
         me.totalPrice.all = 0;
         me.totalPrice.perTag = {};
 
-        // TODO: condition
-        var query = KiiQuery.queryWithClause();
+        // condition
+        var clauses = [];
+        // date range
+        if (cond.startDate) {
+          clauses.push(KiiClause.greaterThanOrEqual("date", cond.startDate));
+        }
+        if (cond.endDate) {
+          clauses.push(KiiClause.lessThanOrEqual("date", cond.endDate));
+        }
+        // TODO: condition of tag, etc...
+
+        var totalClause = KiiClause.and.apply(this, clauses);
+
+        var query = (clauses.length > 0)
+          ? KiiQuery.queryWithClause(totalClause)
+          : KiiQuery.queryWithClause();
         var callbacks = {
           success: function(queryPerformed, resultSet, nextQuery){
             var accounts = [];
@@ -527,9 +542,41 @@ var app = angular.module("ABApp", []);
     $scope.$watch("range.selected", function(value, before){
       // ignore trigger when init.
       if (value !== before) {
-        alert(value + "/" + before);
+        // reload with date range condition.
+        reloadWithDateRange();
       }
     });
+
+    // private methods.
+    /**
+     * reload main table with date range condition.
+     */
+    var reloadWithDateRange = function(){
+      $scope.$parent.load(generateCondition());
+    };
+
+    /**
+     * generate condition object.
+     */
+    var generateCondition = function(){
+      var startDate, endDate;
+      switch(dateRange.selected){
+        case dateRange.THIS_MONTH:
+          (function(){
+            var year = moment().year();
+            var month = moment().month();
+            startDate = moment([year, month, 1]).format("YYYY-MM-DD");
+            endDate = moment([year, month, moment([year, month]).daysInMonth()]).format("YYYY-MM-DD");
+          })();
+          break;
+      }
+
+      var cond = {};
+      if (startDate) cond.startDate = startDate;
+      if (endDate) cond.endDate = endDate;
+
+      return cond;
+    }
   }]);
 
   /**
