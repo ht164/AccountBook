@@ -159,7 +159,7 @@ var app = angular.module("ABApp", []);
   /**
    * main table controller.
    */
-  app.controller("mainTableController", [ "$scope", "accountData", "tagData", function($scope, accountData, tagData){
+  app.controller("mainTableController", [ "$scope", "accountData", "tagData", "dateRange", function($scope, accountData, tagData, dateRange){
     // properties.
     $scope.accountData = accountData;
     $scope.tags = tagData.tags;
@@ -168,7 +168,10 @@ var app = angular.module("ABApp", []);
     /**
      * load account data.
      */
-    $scope.load = function(cond){
+    $scope.load = function(){
+      // generate condition.
+      var cond = dateRange.generateCondition();
+      // callback.
       var onSuccess = function(){
         $scope.$apply();
       }
@@ -542,47 +545,22 @@ var app = angular.module("ABApp", []);
     $scope.$watch("range.selected", function(value, before){
       // ignore trigger when init.
       if (value !== before) {
-        // reload with date range condition.
-        reloadWithDateRange();
+        $scope.$parent.load();
       }
     });
-
-    // private methods.
-    /**
-     * reload main table with date range condition.
-     */
-    var reloadWithDateRange = function(){
-      $scope.$parent.load(generateCondition());
-    };
-
-    /**
-     * generate condition object.
-     */
-    var generateCondition = function(){
-      var startDate, endDate;
-      switch(dateRange.selected){
-        case dateRange.THIS_MONTH:
-          (function(){
-            var year = moment().year();
-            var month = moment().month();
-            startDate = moment([year, month, 1]).format("YYYY-MM-DD");
-            endDate = moment([year, month, moment([year, month]).daysInMonth()]).format("YYYY-MM-DD");
-          })();
-          break;
-      }
-
-      var cond = {};
-      if (startDate) cond.startDate = startDate;
-      if (endDate) cond.endDate = endDate;
-
-      return cond;
-    }
   }]);
 
   /**
    * date range.
    */
   app.value("dateRange", {
+    // consts.
+    THIS_MONTH: 1,
+    LAST_MONTH: 2,
+    THIS_YEAR: 3,
+    LAST_YEAR: 4,
+    MANUAL_RANGE: 5,
+
     // html select options.
     options: [{
       num: 1,
@@ -601,19 +579,38 @@ var app = angular.module("ABApp", []);
       label: "Other"
     }],
 
-    // consts.
-    THIS_MONTH: 1,
-    LAST_MONTH: 2,
-    THIS_YEAR: 3,
-    LAST_YEAR: 4,
-    MANUAL_RANGE: 5,
-
+    // properties.
     // selected range. default is "this month".
     selected: 1,
 
     // manual range.
     start: null,
-    end: null
+    end: null,
+
+    // methods.
+    /**
+     * generate condition object.
+     */
+    generateCondition: function(){
+      var me = this;
+      var startDate, endDate;
+      switch(me.selected){
+        case me.THIS_MONTH:
+          (function(){
+            var year = moment().year();
+            var month = moment().month();
+            startDate = moment([year, month, 1]).format("YYYY-MM-DD");
+            endDate = moment([year, month, moment([year, month]).daysInMonth()]).format("YYYY-MM-DD");
+          })();
+          break;
+      }
+
+      var cond = {};
+      if (startDate) cond.startDate = startDate;
+      if (endDate) cond.endDate = endDate;
+
+      return cond;
+    }
   });
 
   /**
