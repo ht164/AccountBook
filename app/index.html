@@ -144,8 +144,16 @@
                   </table>
                 </div>
                 <div class="modal-footer">
-                  <div class="loading-block">
-                    <img src="images/loading.gif">
+                  <div class="messaging-block">
+                    <div ng-if="state==='creating'">
+                      <img src="images/loading.gif">
+                    </div>
+                    <div class="message message-ok" ng-if="state==='created'">
+                      Created.
+                    </div>
+                    <div class="message message-ng" ng-if="state==='failed'">
+                      Failed to create.
+                    </div>
                   </div>
                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                   <button type="button" class="btn btn-primary" ng-click="create(true)">Add</button>
@@ -193,6 +201,8 @@
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -215,6 +225,7 @@
     <script src="bower_components/bootstrap-3-datepicker/js/bootstrap-datepicker.js"></script>
 
     <script src="bower_components/angularjs/angular.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
 
     <script src="bower_components/underscore/underscore.js"></script>
     <script src="bower_components/momentjs/moment.js"></script>

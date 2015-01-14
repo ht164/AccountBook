@@ -630,6 +630,7 @@ var app = angular.module("ABApp", []);
     $scope.account = accountSave;
     $scope.tags = tagData.tags;
     $scope.ui = addDataDialogUI;
+    $scope.state = "none";
 
     // methods.
     /**
@@ -638,12 +639,12 @@ var app = angular.module("ABApp", []);
      * @param {boolean} close close dialog or not after creating data.
      */
     $scope.create = function(close){
-      var onSuccess = close ? function(){
-        addDataDialogUI.close();
+      var onSuccess = function(){
+        $scope.state = "created";
+        if (close) addDataDialogUI.close();
         $scope.$parent.$apply();
-      } : function(){
-        $scope.$parent.$apply();
-      };
+      }
+      $scope.state = "creating";
       accountData.save(accountSave.getValidData(), onSuccess);
     };
 
