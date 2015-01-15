@@ -143,9 +143,26 @@ body {
   color: #fff;
 }
 
+.add-data-modal .messaging-block {
+  display: inline-block;
+  margin: 0px 4px;
+}
+
 .edit-tag-modal .tag-area .tag {
   border-radius: 4px;
   border: #ddd 1px solid;
   padding: 4px;
   margin: 2px;
+}
+
+.message {
+  font-weight: bold;
+}
+
+.message-ok {
+  color: blue;
+}
+
+.message-ng {
+  color: red;
 }
