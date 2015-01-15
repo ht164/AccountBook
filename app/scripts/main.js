@@ -630,7 +630,7 @@ var app = angular.module("ABApp", []);
     $scope.account = accountSave;
     $scope.tags = tagData.tags;
     $scope.ui = addDataDialogUI;
-    $scope.state = "none";
+    $scope.state = addDataDialogUI.state;
 
     // methods.
     /**
@@ -640,11 +640,12 @@ var app = angular.module("ABApp", []);
      */
     $scope.create = function(close){
       var onSuccess = function(){
+        addDataDialogUI.setStateToCreated(true);
         $scope.state = "created";
         if (close) addDataDialogUI.close();
         $scope.$parent.$apply();
       }
-      $scope.state = "creating";
+      addDataDialogUI.setStateToCreating();
       accountData.save(accountSave.getValidData(), onSuccess);
     };
 
@@ -684,8 +685,10 @@ var app = angular.module("ABApp", []);
   /**
    * add data dialog UI depended code.
    */
-  app.factory("addDataDialogUI", ["accountSave", function(accountSave){
+  app.factory("addDataDialogUI", ["$timeout", "accountSave", function($timeout, accountSave){
     return {
+      state: "none",
+
       init: function(){
         // run on show add-data-modal.
         var jqAddModal = $("#addModal");
@@ -713,6 +716,18 @@ var app = angular.module("ABApp", []);
 
       close: function(){
         $("#addModal").modal("hide");
+      },
+
+      setStateToCreating: function(){
+        this.state = "creating";
+      },
+
+      setStateToCreated: function(isSuccess){
+        var me = this;
+        me.state = isSuccess ? "created" : "failed";
+        $timeout(function(){
+          me.state = "none";
+        }, 1500);
       }
     };
   }]);
