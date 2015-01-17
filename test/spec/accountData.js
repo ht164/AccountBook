@@ -12,7 +12,7 @@ describe("accountData", function(){
 
     // create account data for each test.
     beforeEach(function(){
-      var accounts = testUtil.createAccountData();
+      var accounts = testUtil.createAccountData({ num: 5 });
       accountData.accounts = accounts;
     });
 

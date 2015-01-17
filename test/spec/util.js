@@ -6,25 +6,20 @@
   // test utilities.
   window.testUtil = {
     createAccountData: function(cond){
-      var accounts = [{
-        id: "",
-        name: "",
-        date: "2015-01-01",
-        tags: [],
-        price: 0
-      }, {
-        id: "",
-        name: "",
-        date: "2015-12-31",
-        tags: [],
-        price: 0
-      }, {
-        id: "",
-        name: "",
-        date: "2015-01-02",
-        tags: [],
-        price: 0
-      }];
+      cond = cond || {};
+      var accounts = [];
+      var num = cond.num || 3; // default is 3.
+      var date = moment();
+
+      for (var i = 0; i < num; i++){
+        accounts.push({
+          id: "",
+          name: "TEST_" + i,
+          date: date.add(1, "d").format("YYYY-MM-DD"),
+          tags: [],
+          price: _.random(100, 10000)
+        });
+      }
 
       return accounts;
     },
