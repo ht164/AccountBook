@@ -16,17 +16,32 @@ describe("accountData", function(){
       accountData.accounts = accounts;
     });
 
-    it("should sort by 'date' column. first sort is descend, second sort is descend.", function(){
-      accountData.sort("date");
-      testUtil.verifySort(accountData.accounts, "date", false);
-      accountData.sort("date");
-      testUtil.verifySort(accountData.accounts, "date", true);
+    it("should sort by 'date' column. sort direction is descend > ascend > descend.", function(){
+      var sortKey = "date";
+      accountData.sort(sortKey);
+      testUtil.verifySort(accountData.accounts, sortKey, false);
+      accountData.sort(sortKey);
+      testUtil.verifySort(accountData.accounts, sortKey, true);
+      accountData.sort(sortKey);
+      testUtil.verifySort(accountData.accounts, sortKey, false);
     });
-    it("should sort by 'name' column. first sort is ascend, second sort is ascend.", function(){
-      accountData.sort("name");
-      testUtil.verifySort(accountData.accounts, "name", true);
-      accountData.sort("name");
-      testUtil.verifySort(accountData.accounts, "name", false);
+    it("should sort by 'name' column. sort direction is ascend > descend > ascend.", function(){
+      var sortKey = "name";
+      accountData.sort(sortKey);
+      testUtil.verifySort(accountData.accounts, sortKey, true);
+      accountData.sort(sortKey);
+      testUtil.verifySort(accountData.accounts, sortKey, false);
+      accountData.sort(sortKey);
+      testUtil.verifySort(accountData.accounts, sortKey, true);
+    });
+    it("should sort by 'price' column. sort direction is ascend > descend > ascend.", function(){
+      var sortKey = "price";
+      accountData.sort(sortKey);
+      testUtil.verifySort(accountData.accounts, sortKey, true);
+      accountData.sort(sortKey);
+      testUtil.verifySort(accountData.accounts, sortKey, false);
+      accountData.sort(sortKey);
+      testUtil.verifySort(accountData.accounts, sortKey, true);
     });
       
   });
