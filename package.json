@@ -22,7 +22,13 @@
     "grunt-usemin": "^2.3.0",
     "grunt-wiredep": "^1.7.0",
     "jshint-stylish": "^0.4.0",
+    "karma": "^0.12.31",
+    "karma-chai": "^0.1.0",
+    "karma-mocha": "^0.1.10",
+    "karma-phantomjs-launcher": "^0.1.4",
     "load-grunt-tasks": "^0.4.0",
+    "mocha": "^2.1.0",
+    "phantomjs": "^1.9.13",
     "time-grunt": "^0.4.0"
   },
   "engines": {

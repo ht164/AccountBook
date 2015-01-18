@@ -3,11 +3,12 @@
 (function () {
   'use strict';
 
-  describe('Give it some context', function () {
-    describe('maybe a bit more context here', function () {
-      it('should run here few assertions', function () {
-
+  describe('Module(Test)', function () {
+    describe('Method(Test)', function () {
+      it('Expect(Test)', function () {
+        expect(1).to.equal(1);
       });
     });
   });
+
 })();
