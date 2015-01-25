@@ -55,10 +55,10 @@
           <div class="row">
             <div class="col-xs-9" role="main">
               <div id="main-area-tab" ng-controller="mainAreaTabController">
-                <a class="btn btn-tab-switch btn-tab-switch-selected" ng-click="showTable()">
+                <a class="btn btn-tab-switch" ng-class={"btn-tab-switch-selected":tab==='table'} ng-click="showTable()">
                   <span class="glyphicon glyphicon-th-list"></span>
                 </a>
-                <a class="btn btn-tab-switch" ng-click="showGraph()">
+                <a class="btn btn-tab-switch" ng-class={"btn-tab-switch-selected":tab==='graph'} ng-click="showGraph()">
                   <span class="glyphicon glyphicon-stats"></span>
                 </a>
               </div>
