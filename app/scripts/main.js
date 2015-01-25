@@ -802,7 +802,7 @@ var app = angular.module("ABApp", []);
    * data is accountData.totalPrice.perTag
    * graph data is not connected to original data(perTag).
    */
-  app.factory("graphPricePerTag", [ "accountData", "graphColor", function(accountData, graphColor){
+  app.factory("graphPricePerTag", [ "accountData", "tagData", "graphColor", function(accountData, tagData, graphColor){
     var GRAPH_AREA_ID = "graph-drawing-area";
 
     // private methods.
@@ -829,7 +829,7 @@ var app = angular.module("ABApp", []);
       _.each(priceArray, function(tagPrice, index){
         data.push({
           value: tagPrice.price,
-          label: tagPrice.id,
+          label: tagData.tags[tagPrice.id],
           color: graphColor.getColor(index)
         });
       });
