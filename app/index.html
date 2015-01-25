@@ -54,33 +54,41 @@
         <div id="main-table" ng-switch-when="mainTable" ng-controller="mainTableController">
           <div class="row">
             <div class="col-xs-9" role="main">
-              <div id="main-table-area">
-              <table id="account-data-table" class="table table-striped account-data-table">
-                <thead>
-                  <tr>
-                    <th ng-repeat="colName in ['date', 'name', 'tags', 'price']" ng-click="sort(colName)">{{ colName }}
-                      <div class="sort-indicator" ng-if="accountData.sorted[colName] && accountData.sortDirection"><span class="glyphicon glyphicon-chevron-up"></span></div>
-                      <div class="sort-indicator" ng-if="accountData.sorted[colName] && !accountData.sortDirection"><span class="glyphicon glyphicon-chevron-down"></span></div>
-                    </th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr ng-repeat="account in accountData.accounts" data-id="{{ account.id }}">
-                    <td>{{ account.date }}</td>
-                    <td>{{ account.name }}</td>
-                    <td>
-                      <span class="tag" ng-repeat="tagId in account.tags">
-                        {{ tags[tagId] }}
-                      </span>
-                    </td>
-                    <td class="price">{{ account.price }}</td>
-                    <td><button class="btn btn-default btn-xs remove-data-button" ng-click="remove($event)"><span class="glyphicon glyphicon-remove"></span></button></td>
-                  </tr>
-                </tbody>
-              </table>
+              <div id="main-area-tab" ng-controller="mainAreaTabController">
+                <a class="btn btn-tab-switch btn-tab-switch-selected" ng-click="showTable()">
+                  <span class="glyphicon glyphicon-th-list"></span>
+                </a>
+                <a class="btn btn-tab-switch" ng-click="showGraph()">
+                  <span class="glyphicon glyphicon-stats"></span>
+                </a>
               </div>
-              <div id="graph-area">
+              <div id="main-table-area" ng-if="tab==='table'">
+                <table id="account-data-table" class="table table-striped account-data-table">
+                  <thead>
+                    <tr>
+                      <th ng-repeat="colName in ['date', 'name', 'tags', 'price']" ng-click="sort(colName)">{{ colName }}
+                        <div class="sort-indicator" ng-if="accountData.sorted[colName] && accountData.sortDirection"><span class="glyphicon glyphicon-chevron-up"></span></div>
+                        <div class="sort-indicator" ng-if="accountData.sorted[colName] && !accountData.sortDirection"><span class="glyphicon glyphicon-chevron-down"></span></div>
+                      </th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="account in accountData.accounts" data-id="{{ account.id }}">
+                      <td>{{ account.date }}</td>
+                      <td>{{ account.name }}</td>
+                      <td>
+                        <span class="tag" ng-repeat="tagId in account.tags">
+                          {{ tags[tagId] }}
+                        </span>
+                      </td>
+                      <td class="price">{{ account.price }}</td>
+                      <td><button class="btn btn-default btn-xs remove-data-button" ng-click="remove($event)"><span class="glyphicon glyphicon-remove"></span></button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div id="graph-area" ng-if="tab==='graph'" ng-controller="graphAreaController">
                 <canvas id="graph-drawing-area" width="400" height="400"></canvas>
               </div>
             </div>

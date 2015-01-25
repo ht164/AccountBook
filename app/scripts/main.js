@@ -157,12 +157,26 @@ var app = angular.module("ABApp", []);
   });
 
   /**
+   * main area tab controller.
+   */
+  app.controller("mainAreaTabController", [ "$scope", function($scope){
+    $scope.showTable = function(){
+      $scope.$parent.tab = "table";
+    };
+
+    $scope.showGraph = function(){
+      $scope.$parent.tab = "graph";
+    };
+  }]);
+
+  /**
    * main table controller.
    */
   app.controller("mainTableController", [ "$scope", "accountData", "tagData", "dateRange", "graphPricePerTag", function($scope, accountData, tagData, dateRange, g){
     // properties.
     $scope.accountData = accountData;
     $scope.tags = tagData.tags;
+    $scope.tab = "table";
 
     // methods.
     /**
@@ -215,11 +229,6 @@ var app = angular.module("ABApp", []);
       if ($scope.$parent.pageState == "mainTable"){
         $scope.loadTag();
         $scope.load();
-
-        // temporary: draw chart.
-        setTimeout(function(){
-          g.drawPieChart();
-        }, 2000);
       }
     });
 
@@ -794,7 +803,13 @@ var app = angular.module("ABApp", []);
    * graph area controller.
    */
   app.controller("graphAreaController", [ "$scope", "graphPricePerTag", function($scope, graphPricePerTag){
-    graphPricePerTag.drawPieChart();
+    // watch
+    // load data when main table appears.
+    $scope.$watch($scope.$parent.tab, function(){
+      if ($scope.$parent.tab == "graph") {
+        graphPricePerTag.drawPieChart();
+      }
+    });
   }]);
 
   /**
