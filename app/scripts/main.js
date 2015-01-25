@@ -157,12 +157,26 @@ var app = angular.module("ABApp", []);
   });
 
   /**
+   * main area tab controller.
+   */
+  app.controller("mainAreaTabController", [ "$scope", function($scope){
+    $scope.showTable = function(){
+      $scope.$parent.tab = "table";
+    };
+
+    $scope.showGraph = function(){
+      $scope.$parent.tab = "graph";
+    };
+  }]);
+
+  /**
    * main table controller.
    */
   app.controller("mainTableController", [ "$scope", "accountData", "tagData", "dateRange", function($scope, accountData, tagData, dateRange){
     // properties.
     $scope.accountData = accountData;
     $scope.tags = tagData.tags;
+    $scope.tab = "table";
 
     // methods.
     /**
@@ -784,5 +798,85 @@ var app = angular.module("ABApp", []);
       $scope.$parent.showLoginForm();
     };
   }]);
+
+  /**
+   * graph area controller.
+   */
+  app.controller("graphAreaController", [ "$scope", "graphPricePerTag", function($scope, graphPricePerTag){
+    // watch
+    // load data when main table appears.
+    $scope.$watch($scope.$parent.tab, function(){
+      if ($scope.$parent.tab == "graph") {
+        graphPricePerTag.drawPieChart();
+      }
+    });
+  }]);
+
+  /**
+   * graph: price per tag.
+   * data is accountData.totalPrice.perTag
+   * graph data is not connected to original data(perTag).
+   */
+  app.factory("graphPricePerTag", [ "accountData", "tagData", "graphColor", function(accountData, tagData, graphColor){
+    var GRAPH_AREA_ID = "graph-drawing-area";
+
+    // private methods.
+    /**
+     * generate data for drawing chart.
+     * data source is accountData.totalPrice.perTag.
+     */
+    var generateDataForChart = function(){
+      // converte hash-object to array.
+      var priceArray = [];
+      _.each(accountData.totalPrice.perTag, function(price, tagId){
+        priceArray.push({
+          id: tagId,
+          price: price
+        });
+      });
+      // sort.
+      priceArray = _.sortBy(priceArray, function(tagPrice){
+        // descend sort. larget price is upper rank.
+        return 0 - tagPrice.price;
+      });
+      // create chart data.
+      var data = [];
+      _.each(priceArray, function(tagPrice, index){
+        data.push({
+          value: tagPrice.price,
+          label: tagData.tags[tagPrice.id],
+          color: graphColor.getColor(index)
+        });
+      });
+      return data;
+    };
+
+    return {
+      /**
+       * draw pie chart.
+       */
+      drawPieChart: function(){
+        var data = generateDataForChart();
+
+        var ctx = $("#" + GRAPH_AREA_ID).get(0).getContext("2d");
+        var chart = new Chart(ctx).Pie(data, {});
+
+      }
+    };
+  }]);
+
+  /**
+   * graph color data.
+   */
+  app.value("graphColor", {
+    colors: [
+      "#E5004F", "#50E600", "#0050E6", "E69500", "#00E695", "#9500E6"
+    ],
+
+    getColor: function(index){
+      var _index = index % 6;
+      return this.colors[_index];
+    }
+  });
 
 })(app);

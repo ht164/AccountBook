@@ -88,6 +88,23 @@ body {
   }
 }
 
+.btn-tab-switch {
+  background-color: #fff;
+  color: #333;
+  font-size: 24px;
+}
+.btn-tab-switch:hover, .btn-tab-switch:focus {
+  background-color: #a0d6a0;
+  color: #333;
+}
+.btn-tab-switch-selected {
+  background-color: #5cb85c;
+  color: white;
+}
+.btn-tab-switch-selected:hover, .btn-tab-switch-selected:focus {
+  color: white;
+}
+
 .account-data-table thead th {
   cursor: pointer;
 }
