@@ -54,6 +54,7 @@
         <div id="main-table" ng-switch-when="mainTable" ng-controller="mainTableController">
           <div class="row">
             <div class="col-xs-9" role="main">
+              <div id="main-table-area">
               <table id="account-data-table" class="table table-striped account-data-table">
                 <thead>
                   <tr>
@@ -78,6 +79,10 @@
                   </tr>
                 </tbody>
               </table>
+              </div>
+              <div id="graph-area">
+                <canvas id="graph-drawing-area" width="400" height="400"></canvas>
+              </div>
             </div>
             <div class="col-xs-3">
               <div ng-controller="sumTotalController">

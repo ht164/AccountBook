@@ -159,7 +159,7 @@ var app = angular.module("ABApp", []);
   /**
    * main table controller.
    */
-  app.controller("mainTableController", [ "$scope", "accountData", "tagData", "dateRange", function($scope, accountData, tagData, dateRange){
+  app.controller("mainTableController", [ "$scope", "accountData", "tagData", "dateRange", "graphPricePerTag", function($scope, accountData, tagData, dateRange, g){
     // properties.
     $scope.accountData = accountData;
     $scope.tags = tagData.tags;
@@ -215,6 +215,11 @@ var app = angular.module("ABApp", []);
       if ($scope.$parent.pageState == "mainTable"){
         $scope.loadTag();
         $scope.load();
+
+        // temporary: draw chart.
+        setTimeout(function(){
+          g.drawPieChart();
+        }, 2000);
       }
     });
 
@@ -782,6 +787,64 @@ var app = angular.module("ABApp", []);
     $scope.logout = function(){
       User.logout();
       $scope.$parent.showLoginForm();
+    };
+  }]);
+
+  /**
+   * graph area controller.
+   */
+  app.controller("graphAreaController", [ "$scope", "graphPricePerTag", function($scope, graphPricePerTag){
+    graphPricePerTag.drawPieChart();
+  }]);
+
+  /**
+   * graph: price per tag.
+   * data is accountData.totalPrice.perTag
+   * graph data is not connected to original data(perTag).
+   */
+  app.factory("graphPricePerTag", [ "accountData", function(accountData){
+    var GRAPH_AREA_ID = "graph-drawing-area";
+
+    // private methods.
+    /**
+     * generate data for drawing chart.
+     * data source is accountData.totalPrice.perTag.
+     */
+    var generateDataForChart = function(){
+      // converte hash-object to array.
+      var priceArray = [];
+      _.each(accountData.totalPrice.perTag, function(price, tagId){
+        priceArray.push({
+          id: tagId,
+          price: price
+        });
+      });
+      // sort.
+      priceArray = _.sortBy(priceArray, function(tagPrice){
+        return tagPrice.price;
+      });
+      // create chart data.
+      var data = [];
+      _.each(priceArray, function(tagPrice){
+        data.push({
+          value: tagPrice.price,
+          label: tagPrice.id
+        });
+      });
+      return data;
+    };
+
+    return {
+      /**
+       * draw pie chart.
+       */
+      drawPieChart: function(){
+        var data = generateDataForChart();
+
+        var ctx = $("#" + GRAPH_AREA_ID).get(0).getContext("2d");
+        var chart = new Chart(ctx).Pie(data, {});
+
+      }
     };
   }]);
 
