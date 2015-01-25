@@ -802,7 +802,7 @@ var app = angular.module("ABApp", []);
    * data is accountData.totalPrice.perTag
    * graph data is not connected to original data(perTag).
    */
-  app.factory("graphPricePerTag", [ "accountData", function(accountData){
+  app.factory("graphPricePerTag", [ "accountData", "graphColor", function(accountData, graphColor){
     var GRAPH_AREA_ID = "graph-drawing-area";
 
     // private methods.
@@ -821,14 +821,16 @@ var app = angular.module("ABApp", []);
       });
       // sort.
       priceArray = _.sortBy(priceArray, function(tagPrice){
-        return tagPrice.price;
+        // descend sort. larget price is upper rank.
+        return 0 - tagPrice.price;
       });
       // create chart data.
       var data = [];
-      _.each(priceArray, function(tagPrice){
+      _.each(priceArray, function(tagPrice, index){
         data.push({
           value: tagPrice.price,
-          label: tagPrice.id
+          label: tagPrice.id,
+          color: graphColor.getColor(index)
         });
       });
       return data;
@@ -847,5 +849,19 @@ var app = angular.module("ABApp", []);
       }
     };
   }]);
+
+  /**
+   * graph color data.
+   */
+  app.value("graphColor", {
+    colors: [
+      "#E5004F", "#50E600", "#0050E6", "E69500", "#00E695", "#9500E6"
+    ],
+
+    getColor: function(index){
+      var _index = index % 6;
+      return this.colors[_index];
+    }
+  });
 
 })(app);
