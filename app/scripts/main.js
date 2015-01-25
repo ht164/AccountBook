@@ -172,7 +172,7 @@ var app = angular.module("ABApp", []);
   /**
    * main table controller.
    */
-  app.controller("mainTableController", [ "$scope", "accountData", "tagData", "dateRange", "graphPricePerTag", function($scope, accountData, tagData, dateRange, g){
+  app.controller("mainTableController", [ "$scope", "accountData", "tagData", "dateRange", function($scope, accountData, tagData, dateRange){
     // properties.
     $scope.accountData = accountData;
     $scope.tags = tagData.tags;
