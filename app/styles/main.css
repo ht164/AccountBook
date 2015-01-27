@@ -135,6 +135,26 @@ body {
   margin: 2px;
 }
 
+canvas.graph-pie {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.graph-label-box {
+  margin: 4px;
+  padding: 8px;
+  border: 1px solid #999;
+}
+
+.graph-label-color-block {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+}
+
+.graph-label-text-block {
+}
+
 .total-tag .tag {
   border-radius: 2px;
   border: #ddd 1px solid;
