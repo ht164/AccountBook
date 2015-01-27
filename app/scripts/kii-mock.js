@@ -35,6 +35,11 @@ _KiiUser.prototype = {
   bucketWithName: function(name){
     // return dummy KiiBucket object.
     return new _KiiBucket(name);
+  },
+
+  getAccessToken: function(){
+    // return dummy token string.
+    return "dummy_token";
   }
 };
 
@@ -110,6 +115,13 @@ _KiiObject.prototype = {
   objectURI: function(){
     // return dummy uri.
     return "dummyURI_" + _.random(10000, 99999);
+  },
+
+  delete: function(callbacks){
+    // always success. call callback.
+    setTimeout(function(){
+      callbacks.success();
+    });
   }
 };
 
