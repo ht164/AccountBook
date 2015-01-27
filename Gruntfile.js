@@ -293,9 +293,6 @@ module.exports = function (grunt) {
             'styles/fonts/{,*/}*.*'
           ]
         }, {
-          src: 'node_modules/apache-server-configs/dist/.htaccess',
-          dest: '<%= config.dist %>/.htaccess'
-        }, {
           expand: true,
           dot: true,
           cwd: 'bower_components/bootstrap/dist',
@@ -309,6 +306,12 @@ module.exports = function (grunt) {
         cwd: '<%= config.app %>/styles',
         dest: '.tmp/styles/',
         src: '{,*/}*.css'
+      },
+      kii: {
+        expand: true,
+        cwd: '<%= config.app %>/scripts',
+        src: 'KiiSDK.js',
+        dest: '<%= config.dist %>/scripts'
       }
     },
 
@@ -325,6 +328,22 @@ module.exports = function (grunt) {
         'imagemin',
         'svgmin'
       ]
+    },
+
+    // text replace.
+    // use KiiSDK.js and don't use kii-mock.js
+    replace: {
+      kiisdk: {
+        src: '<%= config.dist %>/{,*/}*.html',
+        overwrite: true,
+        replacements: [{
+          from: '<!--script src="scripts/KiiSDK.js"></script-->',
+          to: '<script src="scripts/KiiSDK.js"></script>'
+        }, {
+          from: '<script src="scripts/kii-mock.js"></script>',
+          to: ''
+        }]
+      }
     }
   });
 
@@ -377,6 +396,8 @@ module.exports = function (grunt) {
     'cssmin',
     'uglify',
     'copy:dist',
+    'copy:kii',
+    'replace',
     'rev',
     'usemin',
     'htmlmin'
