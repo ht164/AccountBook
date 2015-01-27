@@ -802,6 +802,8 @@ var app = angular.module("ABApp", []);
    * graph area controller.
    */
   app.controller("graphAreaController", [ "$scope", "graphPricePerTag", function($scope, graphPricePerTag){
+    $scope.graph = graphPricePerTag;
+
     // watch
     // load data when main table appears.
     $scope.$watch($scope.$parent.tab, function(){
@@ -821,7 +823,7 @@ var app = angular.module("ABApp", []);
 
     // private methods.
     /**
-     * generate data for drawing chart.
+     * generate data for drawing chart and label.
      * data source is accountData.totalPrice.perTag.
      */
     var generateDataForChart = function(){
@@ -838,19 +840,33 @@ var app = angular.module("ABApp", []);
         // descend sort. larget price is upper rank.
         return 0 - tagPrice.price;
       });
-      // create chart data.
-      var data = [];
+      // create chart and label data.
+      var chartData = [];
+      var labelData = [];
       _.each(priceArray, function(tagPrice, index){
-        data.push({
+        chartData.push({
           value: tagPrice.price,
           label: tagData.tags[tagPrice.id],
           color: graphColor.getColor(index)
         });
+        labelData.push({
+          label: tagData.tags[tagPrice.id],
+          color: graphColor.getColor(index)
+        });
       });
-      return data;
+
+      return {
+        chart: chartData,
+        label: labelData
+      };
     };
 
     return {
+      /**
+       * drawn color and tag name.
+       */
+      drawnDataLabel: {},
+
       /**
        * draw pie chart.
        */
@@ -858,8 +874,9 @@ var app = angular.module("ABApp", []);
         var data = generateDataForChart();
 
         var ctx = $("#" + GRAPH_AREA_ID).get(0).getContext("2d");
-        var chart = new Chart(ctx).Pie(data, {});
+        var chart = new Chart(ctx).Pie(data.chart, {});
 
+        this.drawnDataLabel = data.label;
       }
     };
   }]);
