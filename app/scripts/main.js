@@ -207,9 +207,8 @@ var app = angular.module("ABApp", []);
      */
     $scope.remove = function($event){
       // get data id from tr element.
-      // event target (button)'s parent's parent's is tr.
-      var tr = $event.target.parentNode.parentNode;
-      var accountId = tr.getAttribute("data-id");
+      var tr = $($event.target).parentsUntil("table#account-data-table", "tr");
+      var accountId = tr.attr("data-id");
       var onSuccess = function(){
         $scope.$apply();
       };
