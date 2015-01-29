@@ -886,7 +886,7 @@ var app = angular.module("ABApp", []);
    */
   app.value("graphColor", {
     colors: [
-      "#E5004F", "#50E600", "#0050E6", "E69500", "#00E695", "#9500E6"
+      "#E5004F", "#50E600", "#0050E6", "#E69500", "#00E695", "#9500E6"
     ],
 
     getColor: function(index){
