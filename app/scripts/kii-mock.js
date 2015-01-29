@@ -150,6 +150,12 @@ var _Kii_dummyAccountData = [{
     name: "NAME_4",
     tags: ["ID_1", "ID_2", "ID_3"],
     price: 4000
+  }, {
+    id: "ID_4", 
+    date: new Date("2015-01-04"),
+    name: "NAME_4",
+    tags: ["ID_4", "ID_5", "ID_6", "ID_7"],
+    price: 500
   }];
 
 var _Kii_generateDummyAccountResult = function(){
@@ -174,6 +180,18 @@ var _Kii_dummyTagData = [{
   }, {
     id: "ID_3",
     name: "TAG_3"
+  }, {
+    id: "ID_4",
+    name: "TAG_4"
+  }, {
+    id: "ID_5",
+    name: "TAG_5"
+  }, {
+    id: "ID_6",
+    name: "TAG_6"
+  }, {
+    id: "ID_7",
+    name: "TAG_7"
   }];
 
 var _Kii_generateDummyTagResult = function(){
