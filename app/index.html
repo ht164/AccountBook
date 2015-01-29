@@ -97,7 +97,7 @@
                   <div class="col-xs-4">
                     <div class="graph-label-box">
                       <div ng-repeat="l in graph.drawnDataLabel">
-                        <span class="graph-label-color-block" style="background-color: {{ l.color }}"></span>
+                        <span class="graph-label-color-block" ng-class="l.color"></span>
                         <span class="graph-label-text-block">{{ l.label }}</span>
                       </div>
                     </div>
