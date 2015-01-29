@@ -851,7 +851,7 @@ var app = angular.module("ABApp", []);
         });
         labelData.push({
           label: tagData.tags[tagPrice.id],
-          color: graphColor.getColor(index)
+          color: graphColor.getColorClass(index)
         });
       });
 
@@ -892,6 +892,11 @@ var app = angular.module("ABApp", []);
     getColor: function(index){
       var _index = index % 6;
       return this.colors[_index];
+    },
+
+    getColorClass: function(index){
+      var _index = index % 6 + 1;
+      return "color-" + _index;
     }
   });
 

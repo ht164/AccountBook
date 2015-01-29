@@ -152,6 +152,25 @@ canvas.graph-pie {
   display: inline-block;
 }
 
+.graph-label-color-block.color-1 {
+  background-color: #E5004F;
+}
+.graph-label-color-block.color-2 {
+  background-color: #50E600;
+}
+.graph-label-color-block.color-3 {
+  background-color: #0050E6;
+}
+.graph-label-color-block.color-4 {
+  background-color: #E69500;
+}
+.graph-label-color-block.color-5 {
+  background-color: #00E695;
+}
+.graph-label-color-block.color-6 {
+  background-color: #9500E6;
+}
+
 .graph-label-text-block {
 }
 
