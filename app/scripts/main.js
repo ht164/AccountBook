@@ -314,10 +314,10 @@ var app = angular.module("ABApp", []);
         var clauses = [];
         // date range
         if (cond.startDate) {
-          clauses.push(KiiClause.greaterThanOrEqual("date", cond.startDate));
+          clauses.push(KiiClause.greaterThanOrEqual("date", new Date(cond.startDate)));
         }
         if (cond.endDate) {
-          clauses.push(KiiClause.lessThanOrEqual("date", cond.endDate));
+          clauses.push(KiiClause.lessThanOrEqual("date", new Date(cond.endDate)));
         }
         // TODO: condition of tag, etc...
 
