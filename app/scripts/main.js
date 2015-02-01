@@ -10,6 +10,12 @@ var app = angular.module("ABApp", []);
   app.run(function(){
     // init Kii.
     Kii.initializeWithSite("81a08656", "56ddb143a3f3be8365369d630ce650ea", KiiSite.JP);
+
+    // init chart.js
+    Chart.defaults.global = _.extend(Chart.defaults.global, {
+      responsive: true,
+      scaleFontColor: "#222"
+    });
   });
 
   /**
@@ -923,10 +929,10 @@ var app = angular.module("ABApp", []);
       // generate data for chart.
       var labels = [];
       var dataInDatasets = [];
-      _.each(data, function(price, index){
-        labels.push(index);
-        dataInDatasets.push(price);
-      });
+      for (var i = 1, n = data.length; i < n; i++){
+        labels.push(i);
+        dataInDatasets.push(data[i]);
+      }
 
       return {
         labels: labels,
@@ -987,7 +993,9 @@ var app = angular.module("ABApp", []);
         var data = generateDataForChart();
 
         var ctx = $("#" + GRAPH_AREA_ID).get(0).getContext("2d");
-        var chart = new Chart(ctx).Bar(data, {});
+        var chart = new Chart(ctx).Bar(data, {
+          barValueSpacing: 2
+        });
       }
     };
   }]);
