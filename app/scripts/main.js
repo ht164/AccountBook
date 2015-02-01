@@ -801,7 +801,7 @@ var app = angular.module("ABApp", []);
   /**
    * graph area controller.
    */
-  app.controller("graphAreaController", [ "$scope", "graphPricePerTag", function($scope, graphPricePerTag){
+  app.controller("graphAreaController", [ "$scope", "graphPricePerTag", "graphPricePerDate", function($scope, graphPricePerTag, graphPricePerDate){
     $scope.graph = graphPricePerTag;
 
     // watch
@@ -809,6 +809,7 @@ var app = angular.module("ABApp", []);
     $scope.$watch($scope.$parent.tab, function(){
       if ($scope.$parent.tab == "graph") {
         graphPricePerTag.drawPieChart();
+        graphPricePerDate.drawBarChart();
       }
     });
   }]);
@@ -900,4 +901,94 @@ var app = angular.module("ABApp", []);
     }
   });
 
+  /**
+   * graph: price per date.
+   * 
+   * when range is "month", graph is per day.
+   * when range is "year", graph is per month.
+   * 
+   * graph data is not connected to original data(perTag).
+   */
+  app.factory("graphPricePerDate", [ "accountData", "dateRange", function(accountData, dateRange){
+    var GRAPH_AREA_ID = "graph-date-area";
+
+    // private methods.
+    /**
+     * generate data for drawing chart.
+     * data source is accountData.
+     */
+    var generateDataForChart = function(){
+      // calc price per date.
+      var data = gereratePriceDataPerDate();
+      // generate data for chart.
+      var labels = [];
+      var dataInDatasets = [];
+      _.each(data, function(price, index){
+        labels.push(index);
+        dataInDatasets.push(price);
+      });
+
+      return {
+        labels: labels,
+        datasets: [{
+          fillColor: "rgba(151,187,205,0.5)",
+          strokeColor: "rgba(151,187,205,0.8)",
+          highlightFill: "rgba(151,187,205,0.75)",
+          highlightStroke: "rgba(151,187,205,1)",
+          data: dataInDatasets
+        }]
+      };
+    };
+
+    /**
+     * gererate price data per date
+     */
+    var gereratePriceDataPerDate = function(){
+      // init array.
+      var numDataElements = 0;
+      var selected = dateRange.selected;
+      if (selected === 1) {
+        numDataElements = moment().daysInMonth() + 1;
+      } else if (selected === 2) {
+        numDataElements = (moment().subtract(1, "months")).daysInMonth() + 1;
+      } else if (selected === 3 || selected === 4) {
+          numDataElements = 13;
+      }
+      var data = new Array(numDataElements);
+      // zero clear.
+      for (var i = 0; i < data.length; i++) data[i] = 0;
+
+      // define each function.
+      var _f;
+      if (selected === 1 || selected === 2) {
+        _f = function(account){
+          // last 2 chars is day.
+          var day = parseInt(account.date.substr(account.date.length - 2), 10);
+          data[day] += account.price;
+        };
+      } else if (selected === 3 || selected === 4) {
+        _f = function(account){
+          // middle 2 chars is month.
+          var month = account.date.substr(5, 2);
+          data[month] += account.price;
+        };
+      }
+
+      // calc price per date.
+      _.each(accountData.accounts, _f);
+      return data;
+    };
+
+    return {
+      /**
+       * draw bar chart.
+       */
+      drawBarChart: function(){
+        var data = generateDataForChart();
+
+        var ctx = $("#" + GRAPH_AREA_ID).get(0).getContext("2d");
+        var chart = new Chart(ctx).Bar(data, {});
+      }
+    };
+  }]);
 })(app);
