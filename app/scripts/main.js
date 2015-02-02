@@ -16,6 +16,9 @@ var app = angular.module("ABApp", []);
       responsive: true,
       scaleFontColor: "#222"
     });
+
+    // display content.
+    $("#content").css("display", "");
   });
 
   /**

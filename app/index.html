@@ -33,7 +33,7 @@
         <h3 class="text-muted">AccountBook</h3>
       </div>
 
-      <div data-role="content" ng-switch="pageState">
+      <div data-role="content" ng-switch="pageState" id="content" style="display: none;">
         <div id="login-form" ng-switch-when="loginForm" ng-controller="loginFormController" ng-init="init()">
           <form class="form-inline" ng-submit="login()">
             <div>
