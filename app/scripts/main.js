@@ -799,11 +799,11 @@ var app = angular.module("ABApp", []);
     // methods.
     /**
      * logout.
-     * logout and move to login form page.
+     * logout and reload page (move to login form).
      */
     $scope.logout = function(){
       User.logout();
-      $scope.$parent.showLoginForm();
+      location.replace("/");
     };
   }]);
 
