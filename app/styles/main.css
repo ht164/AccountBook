@@ -204,6 +204,11 @@ canvas.graph-pie {
   margin: 0px 4px;
 }
 
+.edit-tag-modal .tag-area .tag-block {
+  display: inline-block;
+  margin-right: 12px;
+}
+
 .edit-tag-modal .tag-area .tag {
   border-radius: 4px;
   border: #ddd 1px solid;

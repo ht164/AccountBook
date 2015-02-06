@@ -210,9 +210,17 @@
                   </div>
                   <h4>Edit tag</h4>
                   <div id="edit-tag-area" class="tag-area">
-                    <span class="tag" ng-repeat="tag in tags">
-                      {{ tag }}
-                    </span>
+                    <div class="tag-block" ng-repeat="tag in tags">
+                      <span class="tag">{{ tag }}</span>
+                      <div class="btn-group" role="group">
+                        <button class="btn btn-default btn-xs" type="button">
+                          <span class="glyphicon glyphicon-pencil"></span>
+                        </button>
+                        <button class="btn btn-default btn-xs" type="button">
+                          <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div class="modal-footer">
