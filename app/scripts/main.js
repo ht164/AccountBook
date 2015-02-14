@@ -385,7 +385,7 @@ var app = angular.module("ABApp", []);
           me.totalPrice.all += account.price;
 
           _.each(account.tags, function(tagId){
-            me.totalPrice.perTag[tagId] += account.price;
+            me.totalPrice.perTag[tagId] = (me.totalPrice.perTag[tagId] || 0) + account.price;
           });
 
           if (onSuccess) onSuccess();
