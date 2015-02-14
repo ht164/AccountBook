@@ -154,7 +154,7 @@ var _Kii_dummyAccountData = [{
     id: "ID_4", 
     date: new Date("2015-01-04"),
     name: "NAME_4",
-    tags: ["ID_4", "ID_5", "ID_6", "ID_7"],
+    tags: ["ID_4"],
     price: 500
   }];
 
