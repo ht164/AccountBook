@@ -482,6 +482,7 @@ var app = angular.module("ABApp", []);
       // properties.
       tags: {},
       tags_reverse: {},
+      tags_objectURI: {},
 
       // methods.
       /**
@@ -501,6 +502,7 @@ var app = angular.module("ABApp", []);
               var id = result.get("id");
               me.tags[id] = name;
               me.tags_reverse[name] = id;
+              me.tags_objectURI[id] = result.objectURI();
             });
             if (nextQuery) {
               bk.executeQuery(nextQuery, callbacks);
@@ -538,6 +540,8 @@ var app = angular.module("ABApp", []);
         obj.save({
           success: function(theObject){
             me.tags[tagId] = tag.name;
+            me.tags_reverse[tag.name] = tagId;
+            me.tags_objectURI[tagId] = theObject.objectURI();
             if (onSuccess) onSuccess();
           },
           failure: function(theObject, errorString){
@@ -551,13 +555,14 @@ var app = angular.module("ABApp", []);
        * if success, remove tag data from me.tags, me.tags_reverse also.
        */
       remove: function(tagId, onSuccess, onFailure){
-        var obj = KiiObject.objectWithURI(tagId);
         var me = this;
+        var obj = KiiObject.objectWithURI(me.tags_objectURI[tagId]);
         // if success, remove from me.tags, me.tags_reverse.
         var _onSuccess = function(){
           removedTagName = me.tags[tagId];
           delete me.tags[tagId];
           delete me.tags_reverse[removedTagName];
+          delete me.tags_objectURI[tagId];
 
           onSuccess();
         }
@@ -567,6 +572,38 @@ var app = angular.module("ABApp", []);
             success: _onSuccess,
             failure: onFailure
           });
+        }
+      },
+
+      /**
+       * modify tag data.
+       */
+      modify: function(tagId, editInfo, onSuccess, onFailure){
+        var me = this;
+        var obj = KiiObject.objectWithURI(me.tags_objectURI[tagId]);
+        // if success, change tag name of my properties.
+        var _onSuccess = function(){
+          var oldTagName = me.tags[tagId];
+          me.tags[tagId] = editInfo.name;
+          me.tags_reverse[editInfo.name] = me.tags_reverse[oldTagName];
+          delete me.tags_reverse[oldTagName];
+
+          if (onSuccess) onSuccess();
+        };
+
+        if (obj) {
+          if (editInfo.name) obj.set("name", editInfo.name);
+
+          obj.save({
+            success: function(theObject){
+              _onSuccess();
+            },
+            failure: function(theObject, errorString){
+              if (onFailure) onFailure();
+            }
+          });
+        } else {
+          if (onFailure) onFailure();
         }
       }
     };
@@ -781,9 +818,20 @@ var app = angular.module("ABApp", []);
   /**
    * edit tag controller
    */
-  app.controller("editTagController", [ "$scope", "tagData", "tagSave", function($scope, tagData, tagSave){
+  app.controller("editTagController", [ "$scope", "tagData", "tagSave", "tagEditSave", function($scope, tagData, tagSave, tagEditSave){
     $scope.tags = tagData.tags;
     $scope.newTag = tagSave;
+    $scope.editTag = tagEditSave;
+
+    // editting tag id.
+    var edittingTagId = null;
+    // old tag name.
+    $scope.edittingTagNameOld = "";
+
+    // set modal dialog behavior.
+    $("#editTagInputModal").on("shown.bs.modal", function(){
+      $("#editTagInputModal-name").focus();
+    });
 
     // methods.
     /**
@@ -809,10 +857,23 @@ var app = angular.module("ABApp", []);
     };
 
     /**
+     * show edit tag dialog.
+     */
+    $scope.showEdit = function(tagId){
+      edittingTagId = tagId;
+      // set tag name to edit tag name dialog.
+      $scope.edittingTagNameOld = tagEditSave.name = tagData.tags[tagId];
+    };
+
+    /**
      * edit tag.
      */
-    $scope.edit = function(tagId){
-      // TODO.
+    $scope.edit = function(){
+      var onSuccess = function(){
+        $scope.$apply();
+        $("#editTagInputModal").modal("hide");
+      }
+      tagData.modify(edittingTagId, tagEditSave.getValidData(), onSuccess);
     };
   }]);
 
@@ -820,6 +881,24 @@ var app = angular.module("ABApp", []);
    * create tag model.
    */
   app.value("tagSave", {
+    name: "",
+
+    /**
+     * return valid tag name data.
+     */
+    getValidData: function(){
+      var me = this;
+      return {
+        name: me.name
+      };
+    }
+  });
+
+  /**
+   * edit tag name model.
+   * TODO: this model is copy of "tagSave".
+   */
+  app.value("tagEditSave", {
     name: "",
 
     /**
