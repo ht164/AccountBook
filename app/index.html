@@ -210,13 +210,13 @@
                   </div>
                   <h4>Edit tag</h4>
                   <div id="edit-tag-area" class="tag-area">
-                    <div class="tag-block" ng-repeat="tag in tags">
+                    <div class="tag-block" ng-repeat="(id, tag) in tags">
                       <span class="tag">{{ tag }}</span>
                       <div class="btn-group" role="group">
                         <button class="btn btn-default btn-xs" type="button">
                           <span class="glyphicon glyphicon-pencil"></span>
                         </button>
-                        <button class="btn btn-default btn-xs" type="button">
+                        <button class="btn btn-default btn-xs" type="button" ng-click="remove(id)">
                           <span class="glyphicon glyphicon-remove"></span>
                         </button>
                       </div>

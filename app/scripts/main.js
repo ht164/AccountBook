@@ -545,6 +545,30 @@ var app = angular.module("ABApp", []);
           }
         });
       },
+
+      /**
+       * remove tag data from KiiCloud.
+       * if success, remove tag data from me.tags, me.tags_reverse also.
+       */
+      remove: function(tagId, onSuccess, onFailure){
+        var obj = KiiObject.objectWithURI(tagId);
+        var me = this;
+        // if success, remove from me.tags, me.tags_reverse.
+        var _onSuccess = function(){
+          removedTagName = me.tags[tagId];
+          delete me.tags[tagId];
+          delete me.tags_reverse[removedTagName];
+
+          onSuccess();
+        }
+
+        if (obj) {
+          obj.delete({
+            success: _onSuccess,
+            failure: onFailure
+          });
+        }
+      }
     };
   });
 
@@ -770,6 +794,25 @@ var app = angular.module("ABApp", []);
         $scope.$apply();
       };
       tagData.save(tagSave.getValidData(), onSuccess);
+    };
+
+    /**
+     * remove tag.
+     * removed tag in account data still exists.
+     * user has to modify account data to remove "removed tag".
+     */
+    $scope.remove = function(tagId){
+      var onSuccess = function(){
+        $scope.$apply();
+      }
+      tagData.remove(tagId, onSuccess);
+    };
+
+    /**
+     * edit tag.
+     */
+    $scope.edit = function(tagId){
+      // TODO.
     };
   }]);
 
