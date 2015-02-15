@@ -195,32 +195,58 @@
           </div>
 
           <!-- edit tag modal -->
-          <div class="modal fade edit-tag-modal" id="editTagModal" role="dialog" aria-hidden="true" ng-controller="editTagController">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title">Edit Tag</h4>
-                </div>
-                <div class="modal-body">
-                  <h4>Create new tag</h4>
-                  <div class="form-inline">
-                    <input type="text" class="form-control" placeholder="new tag name" ng-model="newTag.name">
-                    <button class="btn btn-default" ng-click="create()">Create</button>
+          <div ng-controller="editTagController">
+            <div class="modal fade edit-tag-modal" id="editTagModal" role="dialog" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Edit Tag</h4>
                   </div>
-                  <h4>Edit tag</h4>
-                  <div id="edit-tag-area" class="tag-area">
-                    <span class="tag" ng-repeat="tag in tags">
-                      {{ tag }}
-                    </span>
+                  <div class="modal-body">
+                    <h4>Create new tag</h4>
+                    <div class="form-inline">
+                      <input type="text" class="form-control" placeholder="new tag name" ng-model="newTag.name">
+                      <button class="btn btn-default" ng-click="create()">Create</button>
+                    </div>
+                    <h4>Edit tag</h4>
+                    <div id="edit-tag-area" class="tag-area">
+                      <div class="tag-block" ng-repeat="(id, tag) in tags">
+                        <span class="tag">{{ tag }}</span>
+                        <div class="btn-group" role="group">
+                          <button class="btn btn-default btn-xs" type="button" ng-click="showEdit(id)" data-toggle="modal" data-target="#editTagInputModal">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                          </button>
+                          <button class="btn btn-default btn-xs" type="button" ng-click="remove(id)">
+                            <span class="glyphicon glyphicon-remove"></span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                   </div>
                 </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+            <!-- edit tag input modal -->
+            <div class="modal fade edit-tag-input-modal" id="editTagInputModal" role="dialog" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <h4>Input new tag name</h4>
+                    <form class="form-inline">
+                      <input type="text" class="form-control" placeholder="new tag name" ng-model="editTag.name" id="editTagInputModal-name">
+                      <button type="submit" ng-disabled="editTag.name === edittingTagNameOld" class="btn btn-default" ng-click="edit()">OK</button>
+                      <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
 
