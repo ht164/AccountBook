@@ -783,17 +783,14 @@ var app = angular.module("ABApp", []);
         // run on show add-data-modal.
         var jqAddModal = $("#addModal");
         jqAddModal.on("show.bs.modal", function(e){
-          $("#add-data-date").datepicker({
-            autoclose: true,
-            format: "yyyy-mm-dd",
-            language: "ja",
-            todayHighlight: true
+          $("#add-data-date-div").datetimepicker({
+            format: "YYYY-MM-DD"
           });
         });
 
         // run on hide add-data-modal.
         jqAddModal.on("hidden.bs.modal", function(e){
-          $("#add-data-date").datepicker("remove");
+          // TODO destroy datetimepicker.
         });
       },
 
