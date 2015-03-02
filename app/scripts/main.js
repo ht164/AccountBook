@@ -760,11 +760,14 @@ var app = angular.module("ABApp", []);
       _.each(me.tags, function(val, key){
         if (val) tags.push(key);
       });
+      var price = me.price.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(s){
+        return String.fromCharCode(s.charCodeAt(0) - 65248);
+      });
       return {
         date: new Date(me.date),
         name: me.name,
         tags: tags,
-        price: parseInt(me.price, 10)
+        price: parseInt(price, 10)
       };
     }
   });
