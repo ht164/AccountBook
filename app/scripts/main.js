@@ -790,7 +790,7 @@ var app = angular.module("ABApp", []);
 
         // run on hide add-data-modal.
         jqAddModal.on("hidden.bs.modal", function(e){
-          $("#add-data-date-div").datetimepicker("remove");
+          // TODO destroy datetimepicker.
         });
       },
 
